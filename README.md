@@ -3,12 +3,11 @@
 Checks images used by pods inside cluster and compares them with the newest versions. Notifies if necessary
 
 #### Dockerhub link:
-https://hub.docker.com/r/huxlee/jsapp/tags
+https://hub.docker.com/r/huxlee/clustereye
 
-#### Building and pushing to Dockerhub
-Navigate inside https://github.com/urmas-villem/checker folder                                 
-```docker build . -t huxlee/jsapp:v1.19```                            
-```docker push  huxlee/jsapp:v1.19```                            
+#### Building and pushing to Dockerhub                           
+```docker build . -t huxlee/clustereye:v1.0.0```                            
+```docker push huxlee/clustereye:v1.0.0```                            
 Edit deployment to use the new image                                  
 
 
