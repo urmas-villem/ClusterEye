@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jsapp
+  name: clustereye
   labels:
-    app: jsapp
+    app: clustereye
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jsapp
+      app: clustereye
   template:
     metadata:
       labels:
-        app: jsapp
+        app: clustereye
     spec:
-      serviceAccountName: checker
+      serviceAccountName: clustereye
       containers:
-      - name: jsapp
+      - name: clustereye
         image: huxlee/jsapp:v1.8.8
         ports:
         - containerPort: 9191
         envFrom:
         - configMapRef:
-            name: software-config
+            name: clustereye-config

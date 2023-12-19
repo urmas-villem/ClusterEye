@@ -1,7 +1,7 @@
 {
-  "name": "checker",
+  "name": "clustereye",
   "version": "1.0.0",
-  "description": "checker",
+  "description": "clustereye",
   "author": "Urmas-Villem.Sundja <Urmas.Villem.Sundja@gmail.com>",
   "main": "server.js",
   "scripts": {

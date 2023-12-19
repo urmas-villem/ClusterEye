@@ -1,4 +1,4 @@
-# Checker
+# ClusterEye
 
 Checks images used by pods inside cluster and compares them with the newest versions. Notifies if necessary
 
