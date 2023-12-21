@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    app: istio
+  name: istio
+spec:
+  containers:
+  - image: istio/pilot:1.20.1
+    name: discovery
+    ports:
+    - containerPort: 11
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}

@@ -87,9 +87,12 @@ async function getRunningPodImages() {
 
       if (software && pod.status.containerStatuses) {
         return pod.status.containerStatuses
-          .filter(status => status.name === appName)
+          .filter(status => {
+            const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
+            return status.name === containerNameToMatch;
+          })
           .map(status => ({
-            containerName: status.name,
+            containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
             imageRepository: status.image.split(':')[0],
             imageVersionUsedInCluster: status.image.split(':')[1],
             appName: appName,
