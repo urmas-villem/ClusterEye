@@ -2,7 +2,7 @@
 └── ClusterEye/
     ├── src/
     │   ├── getRunningPodImages.js
-    │   └── server.js
+    │   ├── server.js
     │   └──public/
     │      ├──  index.html
     │      ├──  script.js
