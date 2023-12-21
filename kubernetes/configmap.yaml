@@ -6,19 +6,25 @@ metadata:
 data:
   prometheus: |
     {
-      "command": "curl -s \"https://api.github.com/repos/prometheus/prometheus/releases/latest\" | jq -r '.tag_name'",
+      "command": ["curl", "-s", "https://api.github.com/repos/prometheus/prometheus/releases/latest", "|", "jq", "-r", "'.tag_name'"],
       "eolUrl": "https://endoflife.date/api/prometheus.json",
       "note": ""
     }
   logstash-oss: |
     {
-      "command": "curl -s https://www.docker.elastic.co/r/logstash/logstash-oss | grep -Eo 'logstash-oss:[0-9]+\\.[0-9]+\\.[0-9]+' | sed 's/logstash-oss://' | sort -Vr | head -n 1",
+      "command": ["curl", "-s", "https://www.docker.elastic.co/r/logstash/logstash-oss", "|", "grep", "-Eo", "'logstash-oss:[0-9]+\\.[0-9]+\\.[0-9]+'", "|", "sed", "'s/logstash-oss://'", "|", "sort", "-Vr", "|", "head", "-n", "1"],
       "eolUrl": "https://endoflife.date/api/logstash.json",
       "note": ""
     }
   alertmanager: |
     {
-      "command": "curl -s \"https://api.github.com/repos/prometheus/alertmanager/releases/latest\" | jq -r '.tag_name'",
+      "command": ["curl", "-s", "https://api.github.com/repos/prometheus/alertmanager/releases/latest", "|", "jq", "-r", "'.tag_name'"],
       "eolUrl": "",
       "note": "Alertmanager versions do not have a specific 'end of life'"
+    }
+  istio: |
+    {
+      "command": ["curl", "-s", "https://api.github.com/repos/istio/istio/releases", "|", "jq", "'.[0:20] | map(.tag_name)'", "|", "jq", "-r", "'.[]'", "|", "grep", "-v", "-E", "'beta|rc'", "|", "sort", "-V", "|", "tail", "-n", "1"],
+      "eolUrl": "https://endoflife.date/api/istio.json",
+      "note": ""
     }

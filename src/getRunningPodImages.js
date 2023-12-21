@@ -17,9 +17,11 @@ async function fetchSoftwareConfig() {
   }
 }
 
-async function fetchLatestImageTag(command) {
+async function fetchLatestImageTag(commandArray) {
   const networkErrorMessage = 'Network error occurred with getting latest version, try again in a few minutes';
   try {
+    const command = commandArray.join(' ');
+
     const { stdout, stderr } = await exec(command);
     if (stderr || !stdout || stdout.trim() === 'null') {
       console.error(`Error in command execution: ${stderr}`);
