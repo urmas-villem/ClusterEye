@@ -84,14 +84,16 @@ async function getRunningPodImages() {
       const software = softwares.find(s => s.name === appName);
 
       if (software && pod.status.containerStatuses) {
-        return pod.status.containerStatuses.map(status => ({
-          containerName: status.name,
-          imageRepository: status.image.split(':')[0],
-          imageVersionUsedInCluster: status.image.split(':')[1],
-          appName: appName,
-          command: software.command,
-          note: software.note || ''
-        }));
+        return pod.status.containerStatuses
+          .filter(status => status.name === appName)
+          .map(status => ({
+            containerName: status.name,
+            imageRepository: status.image.split(':')[0],
+            imageVersionUsedInCluster: status.image.split(':')[1],
+            appName: appName,
+            command: software.command,
+            note: software.note || ''
+          }));
       }
       return [];
     });
@@ -101,7 +103,7 @@ async function getRunningPodImages() {
         containerObj.newestImageAvailable = await fetchLatestImageTag(containerObj.command);
       }
       const softwareConfig = softwares.find(s => s.name === containerObj.appName);
-    
+
       if (softwareConfig && softwareConfig.eolUrl) {
         containerObj.eolDate = await fetchEOLDate(containerObj.appName, containerObj.imageVersionUsedInCluster, softwareConfig.eolUrl);
       } else {
