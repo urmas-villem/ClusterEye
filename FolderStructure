@@ -3,10 +3,10 @@
     ├── src/
     │   ├── getRunningPodImages.js
     │   └── server.js
-    ├── public/
-    │   ├──  index.html
-    │   ├──  script.js
-    │   ├──  polling.js
-    │   └──  utility.js
+    │   └──public/
+    │      ├──  index.html
+    │      ├──  script.js
+    │      ├──  polling.js
+    │      └──  utility.js
     └── kubernetes/
         └── configmap.yaml
