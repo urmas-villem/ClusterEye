@@ -13,11 +13,15 @@ spec:
     metadata:
       labels:
         app: clustereye
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "9191"
     spec:
       serviceAccountName: clustereye
       containers:
       - name: clustereye
-        image: huxlee/clustereye:v1.0.0
+        image: huxlee/clustereye:v1.0.6
         ports:
         - containerPort: 9191
         envFrom:

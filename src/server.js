@@ -2,36 +2,65 @@
 
 const express = require('express');
 const path = require('path');
+const promClient = require('prom-client');
 const { getRunningPodImages } = require('./getRunningPodImages');
 
 const PORT = 9191;
 const HOST = '0.0.0.0';
-const UPDATE_INTERVAL = 300000; // 5 minutes
+const UPDATE_INTERVAL = 60 * 60 * 1000; // 1 hour
 
 const app = express();
 let cache = null;
 let lastUpdated = Date.now();
 
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Prometheus metrics setup
+const register = new promClient.Registry();
+const containerInfoGauge = new promClient.Gauge({
+    name: 'clustereye_container_status',
+    help: 'Status information about containers monitored by ClusterEye',
+    labelNames: ['container_name', 'image_repository', 'image_version', 'newest_image'],
+    registers: [register],
+});
+
+// Function to update the cache
 async function updateCache() {
     try {
         cache = await getRunningPodImages();
         lastUpdated = Date.now();
+        updateMetricsFromCache();
     } catch (error) {
         console.error('Error updating cache:', error);
     }
 }
 
-app.use(express.static(path.join(__dirname, 'public')));
+function updateMetricsFromCache() {
+    if (cache) {
+        cache.forEach(pod => {
+            containerInfoGauge.labels(pod.containerName, pod.imageRepository, pod.imageVersionUsedInCluster, pod.newestImageAvailable).set(1);
+        });
+    }
+}
 
-app.get('/pod-images', (req, res) => {
-    res.json({ data: cache, lastUpdated });
-});
-
+// Endpoint to trigger cache and Prometheus metrics updates
 app.post('/trigger-update', async (req, res) => {
     await updateCache();
     res.status(200).send('Cache updated');
 });
 
+// Endpoint to get pod images data
+app.get('/pod-images', (req, res) => {
+    res.json({ data: cache, lastUpdated });
+});
+
+// Metrics endpoint
+app.get('/metrics', async (req, res) => {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+});
+
+// Start server and initialize cache update and metrics update
 app.listen(PORT, HOST, () => {
     console.log(`Running on http://${HOST}:${PORT}`);
     updateCache();
