@@ -29,7 +29,7 @@ kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/
 ```
 or as a one liner (in windows cmd)
 ```
-powershell -c "$i=irm 'https://api.github.com/repos/urmas-villem/ClusterEye/contents/kubernetes';foreach($item in $i){kubectl apply -f $item.download_url}"
+powershell -c "(irm 'https://api.github.com/repos/urmas-villem/ClusterEye/contents/kubernetes').foreach{kubectl apply -f $_.download_url}"
 ```
 
 #### Remove the application from kubernetes
@@ -43,5 +43,5 @@ kubectl delete -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main
 ```
 or as a one liner (in windows cmd)
 ```
-powershell -c "$i=irm 'https://api.github.com/repos/urmas-villem/ClusterEye/contents/kubernetes';foreach($item in $i){kubectl delete -f $item.download_url}"
+powershell -c "(irm 'https://api.github.com/repos/urmas-villem/ClusterEye/contents/kubernetes').foreach{kubectl delete -f $_.download_url}"
 ```
