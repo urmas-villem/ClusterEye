@@ -26,9 +26,9 @@ kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/
 kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/deployment.yaml                  
 kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/service.yaml                  
 kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/serviceaccount.yaml
-
+```
 or (in windows cmd)
-
+```
 powershell -Command "(Invoke-WebRequest -Uri 'https://api.github.com/repos/urmas-villem/ClusterEye/contents/kubernetes').Content | ConvertFrom-Json | % { $_.download_url } | % { kubectl apply -f $_ }"
 ```
 
@@ -40,8 +40,8 @@ kubectl delete -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main
 kubectl delete -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/deployment.yaml
 kubectl delete -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/service.yaml
 kubectl delete -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/serviceaccount.yaml
-
+```
 or (in windows cmd)
-
+```
 powershell -Command "(Invoke-WebRequest -Uri 'https://api.github.com/repos/urmas-villem/ClusterEye/contents/kubernetes').Content | ConvertFrom-Json | % { $_.download_url } | % { kubectl delete -f $_ }"
 ```
