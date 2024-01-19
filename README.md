@@ -27,3 +27,13 @@ kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/
 kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/service.yaml                  
 kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/serviceaccount.yaml                         
 ```
+
+#### Remove the application from kubernetes
+``` 
+kubectl delete -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/clusterrole.yaml
+kubectl delete -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/clusterrolebinding.yaml
+kubectl delete -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/configmap.yaml
+kubectl delete -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/deployment.yaml
+kubectl delete -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/service.yaml
+kubectl delete -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/serviceaccount.yaml
+```
