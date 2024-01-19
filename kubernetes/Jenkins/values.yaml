@@ -373,12 +373,12 @@ controller:
       image: kiwigrid/k8s-sidecar:1.24.4
       imagePullPolicy: IfNotPresent
       resources: {}
-           limits:
-             cpu: 100m
-             memory: 100Mi
-           requests:
-             cpu: 50m
-             memory: 50Mi
+        #   limits:
+        #     cpu: 100m
+        #     memory: 100Mi
+        #   requests:
+        #     cpu: 50m
+        #     memory: 50Mi
       # How many connection-related errors to retry on
       reqRetryConnect: 10
       # env:
