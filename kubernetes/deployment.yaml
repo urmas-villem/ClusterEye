@@ -21,7 +21,7 @@ spec:
       serviceAccountName: clustereye
       containers:
       - name: clustereye
-        image: huxlee/clustereye:v1.0.6
+        image: huxlee/clustereye:latest
         ports:
         - containerPort: 9191
         envFrom:
