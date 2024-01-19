@@ -3,16 +3,14 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
-    imagePullPolicy: Always
-    command:
-    - sleep
-    args:
-    - 9999999
+    imagePullPolicy: IfNotPresent
+    command: ["/busybox/cat"]
+    tty: true
     volumeMounts:
-      - name: jenkins-docker-cfg
+      - name: docker-config
         mountPath: /kaniko/.docker
   volumes:
-  - name: jenkins-docker-cfg
+  - name: docker-config
     projected:
       sources:
       - secret:
