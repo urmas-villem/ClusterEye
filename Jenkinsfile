@@ -35,7 +35,7 @@ pipeline {
         container(name: 'kaniko', shell: '/busybox/sh') {
           sh '''#!/busybox/sh
 
-            /kaniko/executor --dockerfile `pwd`/Dockerfile --context `pwd` --destination=${IMAGE_NAME}:${IMAGE_TAG} --destination=${IMAGE_NAME}:latest
+            /kaniko/executor --dockerfile `pwd`/dockerfile --context `pwd` --destination=${IMAGE_NAME}:${IMAGE_TAG} --destination=${IMAGE_NAME}:latest
           '''
         }
       }
