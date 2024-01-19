@@ -1,6 +1,3 @@
-1) Kubernetes setup in docker
-
-2) Installs Jenkins
 helm repo add jenkinsci https://charts.jenkins.io                         
 helm repo update                               
 
