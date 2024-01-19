@@ -29,7 +29,7 @@ kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/
 ```
 or as a one liner (in windows cmd)
 ```
-powershell -Command "(Invoke-WebRequest -Uri 'https://api.github.com/repos/urmas-villem/ClusterEye/contents/kubernetes').Content | ConvertFrom-Json | % { $_.download_url } | % { kubectl apply -f $_ }"
+powershell -c "$items = irm 'https://api.github.com/repos/urmas-villem/ClusterEye/contents/kubernetes'; foreach ($item in $items) { kubectl apply -f $item.download_url }"
 ```
 
 #### Remove the application from kubernetes
