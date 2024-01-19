@@ -9,7 +9,7 @@ pipeline {
   environment {
         APP_NAME = "ClusterEye"
         RELEASE = "1.0.0"
-        IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
+        IMAGE_NAME = "huxlee" + "/" + "clustereye"
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
         /* JENKINS_API_TOKEN = credentials("JENKINS_API_TOKEN") */
 
