@@ -364,15 +364,15 @@ controller:
       # jcasc changes will cause a reboot and will only be applied at the subsequent start-up.  Auto-reload uses the
       # http://<jenkins_url>/reload-configuration-as-code endpoint to reapply config when changes to the configScripts are detected.
       enabled: true
-      image: kiwigrid/k8s-sidecar:1.23.1
+      image: kiwigrid/k8s-sidecar:1.24.4
       imagePullPolicy: IfNotPresent
       resources: {}
-        #   limits:
-        #     cpu: 100m
-        #     memory: 100Mi
-        #   requests:
-        #     cpu: 50m
-        #     memory: 50Mi
+           limits:
+             cpu: 100m
+             memory: 100Mi
+           requests:
+             cpu: 50m
+             memory: 50Mi
       # How many connection-related errors to retry on
       reqRetryConnect: 10
       # env:
@@ -625,9 +625,13 @@ agent:
   kubernetesConnectTimeout: 5
   kubernetesReadTimeout: 15
   maxRequestsPerHostStr: "32"
+  retentionTimeout: 5
+  waitForPodSec: 600
   namespace:
+  # private registry for agent image
+  jnlpregistry:
   image: "jenkins/inbound-agent"
-  tag: "3107.v665000b_51092-5"
+  tag: "3192.v713e3b_039fb_e-5"
   workingDir: "/home/jenkins/agent"
   nodeUsageMode: "NORMAL"
   customJenkinsLabels: []
@@ -644,9 +648,18 @@ agent:
     requests:
       cpu: "512m"
       memory: "512Mi"
+      # ephemeralStorage:
     limits:
       cpu: "512m"
       memory: "512Mi"
+      # ephemeralStorage:
+  livenessProbe: {}
+#    execArgs: "cat /tmp/healthy"
+#    failureThreshold: 3
+#    initialDelaySeconds: 0
+#    periodSeconds: 10
+#    successThreshold: 1
+#    timeoutSeconds: 1
   # You may want to change this to true while testing a new image
   alwaysPullImage: false
   # Controls how agent pods are retained after the Jenkins build completes
@@ -657,7 +670,7 @@ agent:
   # or simply to clean up the output to make it easier to read.
   showRawYaml: true
   # You can define the volumes that you want to mount for this container
-  # Allowed types are: ConfigMap, EmptyDir, HostPath, Nfs, PVC, Secret
+  # Allowed types are: ConfigMap, EmptyDir, EphemeralVolume, HostPath, Nfs, PVC, Secret
   # Configure the attributes as they appear in the corresponding Java class for that type
   # https://github.com/jenkinsci/kubernetes-plugin/tree/master/src/main/java/org/csanchez/jenkins/plugins/kubernetes/volumes
   volumes: []
@@ -667,6 +680,11 @@ agent:
   # - type: EmptyDir
   #   mountPath: /var/myapp/myemptydir
   #   memory: false
+  # - type: EphemeralVolume
+  #   mountPath: /var/myapp/myephemeralvolume
+  #   accessModes: ReadWriteOnce
+  #   requestsSize: 10Gi
+  #   storageClassName: mystorageclass
   # - type: HostPath
   #   hostPath: /var/lib/containers
   #   mountPath: /var/myapp/myhostpath
@@ -686,7 +704,7 @@ agent:
   # Pod-wide environment, these vars are visible to any container in the agent pod
 
   # You can define the workspaceVolume that you want to mount for this container
-  # Allowed types are: DynamicPVC, EmptyDir, HostPath, Nfs, PVC
+  # Allowed types are: DynamicPVC, EmptyDir, EphemeralVolume, HostPath, Nfs, PVC
   # Configure the attributes as they appear in the corresponding Java class for that type
   # https://github.com/jenkinsci/kubernetes-plugin/tree/master/src/main/java/org/csanchez/jenkins/plugins/kubernetes/volumes/workspace
   workspaceVolume: {}
@@ -696,6 +714,11 @@ agent:
   ## EmptyDir example
   # type: EmptyDir
   # memory: false
+  ## EphemeralVolume example
+  # type: EphemeralVolume
+  # accessModes: ReadWriteOnce
+  # requestsSize: 10Gi
+  # storageClassName: mystorageclass
   ## HostPath example
   # type: HostPath
   # hostPath: /var/lib/containers
