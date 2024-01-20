@@ -335,42 +335,11 @@ jenkins:
       configUrls: []
       # - https://acme.org/jenkins.yaml
       # Remote URL:s for configuration files.
-    configScripts: |
-      pipelineJob('ClusterEyeDeployment') {
-          description('ClusterEye deployment.')
-          keepDependencies(false)
-          properties {
-              disableConcurrentBuildsJobProperty {
-                  abortPrevious(false)
-              }
-          }
-          definition {
-              cpsScmFlowDefinition {
-                  scm {
-                      git {
-                          configVersion(2)
-                          userRemoteConfigs {
-                              hudson.plugins.git.UserRemoteConfig {
-                                  url('https://github.com/urmas-villem/ClusterEye.git')
-                              }
-                          }
-                          branches {
-                              hudson.plugins.git.BranchSpec {
-                                  name('*/main')
-                              }
-                          }
-                          doGenerateSubmoduleConfigurations(false)
-                          submoduleCfg('[]')
-                          extensions('[]')
-                      }
-                  }
-                  scriptPath('Jenkinsfile')
-                  lightweight(true)
-              }
-          }
-          triggers {}
-          disabled(false)
-      }
+      configScripts: {}
+      #  welcome-message: |
+      #    jenkins:
+      #      systemMessage: Welcome to our CI\CD server.  This Jenkins is configured and managed 'as code'.
+      # Allows adding to the top-level security JCasC section. For legacy,  default the chart includes apiToken configurations
       security:
         apiToken:
           creationOfLegacyTokenEnabled: false
