@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/urmas-villem/ClusterEye.git
     targetRevision: main
-    path: clustereye/kubernetes/Jenkins
+    path: kubernetes/Jenkins
     helm:
       valueFiles:
         - values.yaml
