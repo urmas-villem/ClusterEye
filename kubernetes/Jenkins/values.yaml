@@ -335,11 +335,14 @@ jenkins:
       configUrls: []
       # - https://acme.org/jenkins.yaml
       # Remote URL:s for configuration files.
-      configScripts: {}
-      #  welcome-message: |
-      #    jenkins:
-      #      systemMessage: Welcome to our CI\CD server.  This Jenkins is configured and managed 'as code'.
-      # Allows adding to the top-level security JCasC section. For legacy,  default the chart includes apiToken configurations
+      configScripts: |
+          pipelineJob('ClusterEyeDeployment') {
+              description('ClusterEye deployment.')
+              configFileProvider([configFile(fileId: 'jenkins-yaml', targetLocation: 'jenkins.yaml', variable: 'CONFIG_FILE')]) {
+                  sh 'wget -q -O jenkins.yaml https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/Jenkins/ClusterEyepipelineconfig.yaml'
+                  load './jenkins.yaml'
+              }
+          }
       security:
         apiToken:
           creationOfLegacyTokenEnabled: false
