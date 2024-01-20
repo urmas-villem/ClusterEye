@@ -4,5 +4,6 @@ Using Powershell:
 ``` 
 kubectl create namespace argocd; kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 kubectl patch svc argocd-server -n argocd -p '{\"spec\": {\"type\": \"LoadBalancer\"}}'                              
-argocd admin initial-password -n argocd                                  
+argocd admin initial-password -n argocd
+$initial_password = (argocd admin initial-password -n argocd).Split("`n")[0].Trim()                                                 
 ``` 
