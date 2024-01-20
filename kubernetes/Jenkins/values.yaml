@@ -340,7 +340,7 @@ jenkins:
               description('ClusterEye deployment.')
               configFileProvider([configFile(fileId: 'jenkins-yaml', targetLocation: 'jenkins.yaml', variable: 'CONFIG_FILE')]) {
                   sh 'wget -q -O jenkins.yaml https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/Jenkins/ClusterEyepipelineconfig.yaml'
-                  load './jenkins.yaml'
+                  load './ClusterEyepipelineconfig.yaml'
               }
           }
       security:
