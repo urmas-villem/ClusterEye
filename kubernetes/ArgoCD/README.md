@@ -2,7 +2,9 @@
 
 Using Powershell:
 ``` 
-kubectl create namespace argocd; kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl create namespace argocd
+kubectl create namespace jenkins
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 kubectl patch svc argocd-server -n argocd -p '{\"spec\": {\"type\": \"LoadBalancer\"}}'
 kubectl patch svc argocd-server -n argocd --type='json' -p '[{"op": "replace", "path": "/spec/ports/0/port", "value": 81}]'
 
@@ -40,5 +42,11 @@ Write-Host "Logged into ArgoCD." -ForegroundColor Green
                
 argocd app create clustereye --repo https://github.com/urmas-villem/ClusterEye.git --path kubernetes --dest-server https://kubernetes.default.svc --dest-namespace default --sync-policy automated
 
-kubectl apply -n argocd -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/Jenkins/jenkins.yaml                                                              
+kubectl apply -n argocd -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/Jenkins/jenkins.yaml
+
+$dockerUsername = Read-Host "Enter Docker registry username"
+$dockerPassword = Read-Host "Enter Docker registry password" -AsSecureString
+
+kubectl create secret docker-registry docker-credentials --docker-username=$dockerUsername --docker-password=$dockerPassword --docker-email=random@random.com --namespace jenkins
+                                                     
 ``` 
