@@ -24,8 +24,7 @@ kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/
 kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/service.yaml                  
 kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/serviceaccount.yaml
 ```
-+
-Testing commands:
+And add the commands for creating test pods
 ```             
 kubectl run prometheus --image=prom/prometheus:v2.48.1 --port=9090 --labels="app=prometheus"                 
 kubectl run alertmanager --image=prom/alertmanager:v0.26.0 --port=9093 --labels="app=alertmanager"   
