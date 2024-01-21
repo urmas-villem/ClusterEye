@@ -13,7 +13,7 @@ https://hub.docker.com/r/huxlee/clustereye
                                                                                 
 Run this command in a powershell window.     
 ```   
-Invoke-Expression (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/ArgoCD/README.md").Content
+Invoke-Expression (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/ArgoCD/setup.ps1").Content
 ```
 This will:                                              
 - setup argocd (on localhost:81)
