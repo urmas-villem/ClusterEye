@@ -12,8 +12,14 @@ Edit deployment to use the new image
 
 #### Run the application on kubernetes
 ### Option 1
+Run this command in a powershell window. 
+This will:
+- setup argocd (on localhost:81)
+- setup jenkins(with all of the prerequisites and the pipeline job already configured) on (localhost:8080)
+- setup the ClusterEye application (on localhost)
+- setup some dummy applications so Clustereye has something to check otherwise the input is empty
 ```   
-
+Invoke-Expression (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/ArgoCD/README.md").Content
 ```
 ### Option2
 ```   
