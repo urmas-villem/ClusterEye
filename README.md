@@ -9,7 +9,8 @@ https://hub.docker.com/r/huxlee/clustereye
 ### Deployment option 1
 ## Prerequisites:
 - [ArgoCD cli](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
-- [Helm](https://helm.sh/docs/intro/install/)                                         
+- [Helm](https://helm.sh/docs/intro/install/)
+                                                                                
 Run this command in a powershell window.                                              
 This will:                                              
 - setup argocd (on localhost:81)
