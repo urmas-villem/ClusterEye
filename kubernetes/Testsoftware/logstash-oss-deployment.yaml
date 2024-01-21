@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash-oss
+  labels:
+    app: logstash-oss
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash-oss
+  template:
+    metadata:
+      labels:
+        app: logstash-oss
+    spec:
+      containers:
+      - name: logstash-oss
+        image: docker.elastic.co/logstash/logstash-oss:8.11.3
+        ports:
+        - containerPort: 6173
