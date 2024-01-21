@@ -8,10 +8,13 @@ https://hub.docker.com/r/huxlee/clustereye
 #### Building and pushing to Dockerhub                           
 ```docker build . -t huxlee/clustereye:v1.0.0```                            
 ```docker push huxlee/clustereye:v1.0.0```                            
-Edit deployment to use the new image                                  
+Edit deployment to use the new image        
 
 #### Run the application on kubernetes
-### Option 1
+### Deployment option 1
+## Prerequisites:
+- [ArgoCD cli](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
+- [Helm](https://helm.sh/docs/intro/install/)
 Run this command in a powershell window. 
 This will:
 - setup argocd (on localhost:81)
@@ -21,7 +24,7 @@ This will:
 ```   
 Invoke-Expression (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/ArgoCD/README.md").Content
 ```
-### Option2
+### Deployment option 2
 ```   
 kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/clusterrole.yaml                 
 kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/clusterrolebinding.yaml                
