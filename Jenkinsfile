@@ -12,8 +12,10 @@ pipeline {
         IMAGE_TAG = "${RELEASE}.${BUILD_NUMBER}"
         ARGOCD_SERVICE_NAME = "argocd-server"
         ARGOCD_PORT = "81"
-        ARGOCD_URL = "http://${ARGOCD_SERVICE_NAME}:${ARGOCD_PORT}"
+        ARGOCD_NAMESPACE = "argocd"
+        ARGOCD_URL = "http://${ARGOCD_SERVICE_NAME}.${ARGOCD_NAMESPACE}.svc.cluster.local:${ARGOCD_PORT}"
     }
+
 
     stages {
         stage("Cleanup Workspace") {
