@@ -50,9 +50,7 @@ argocd app create clustereye --repo https://github.com/urmas-villem/ClusterEye.g
 kubectl apply -n argocd -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/Jenkins/jenkins.yaml
 
 Write-Host "Set up dummy software for Clustereye to pick up" -ForegroundColor Yellow
-kubectl apply -n argocd -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/Testsoftware/ArgoApps/alertmanager.yaml
-kubectl apply -n argocd -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/Testsoftware/ArgoApps/logstash.yaml
-kubectl apply -n argocd -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/Testsoftware/ArgoApps/prometheus.yaml
+kubectl apply -n argocd -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/Testsoftware/argoapp/testsoftware-setup.yaml
 
 $dockerPassword = Read-Host "Enter Docker registry password" -AsSecureString
 $plainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($dockerPassword))
