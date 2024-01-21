@@ -10,7 +10,7 @@ pipeline {
         RELEASE = "v1.0"
         IMAGE_NAME = "huxlee" + "/" + "clustereye"
         IMAGE_TAG = "${RELEASE}.${BUILD_NUMBER}"
-        ARGOCD_URL = "http://localhost:81"
+        ARGOCD_URL = "http://argocd-server:81"
     }
 
     stages {
