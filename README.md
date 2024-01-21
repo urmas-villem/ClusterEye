@@ -13,12 +13,7 @@ Edit deployment to use the new image
 #### Run the application on kubernetes
 ### Option 1
 ```   
-kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/clusterrole.yaml                 
-kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/clusterrolebinding.yaml                
-kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/configmap.yaml                
-kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/deployment.yaml                  
-kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/service.yaml                  
-kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/serviceaccount.yaml
+
 ```
 ### Option2
 ```   
