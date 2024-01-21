@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/urmas-villem/ClusterEye.git
     targetRevision: HEAD
-    path: kubernetes/Testsoftware/Deployments
+    path: kubernetes/Testsoftware/deployments
     directory:
       recurse: true
   destination:
