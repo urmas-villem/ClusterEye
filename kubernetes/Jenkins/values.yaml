@@ -253,6 +253,7 @@ jenkins:
       - git:5.2.1
       - configuration-as-code:1775.v810dc950b_514
       - ws-cleanup:0.45
+      - job-dsl:1.87
   
     # Set to false to download the minimum required version of all dependencies.
     installLatestPlugins: true
