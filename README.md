@@ -6,7 +6,7 @@ Checks images used by pods inside cluster and compares them with the newest vers
 https://hub.docker.com/r/huxlee/clustereye   
 
 #### Run the application on kubernetes
-### Deployment option 1
+### Deployment option 1 (windows environment)
 ## Prerequisites:
 - [ArgoCD cli](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
 - [Helm](https://helm.sh/docs/intro/install/)
@@ -21,7 +21,7 @@ This will:
 - setup the ClusterEye application (on localhost)
 - setup some dummy applications so Clustereye has something to check otherwise the input is empty
 
-### Deployment option 2
+### Deployment option 2 (any environment with running kubernetes cluster)
 ```   
 kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/clusterrole.yaml                 
 kubectl apply -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/clusterrolebinding.yaml                
