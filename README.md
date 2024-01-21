@@ -3,12 +3,7 @@
 Checks images used by pods inside cluster and compares them with the newest versions. Notifies if necessary
 
 #### Dockerhub link:
-https://hub.docker.com/r/huxlee/clustereye
-
-#### Building and pushing to Dockerhub                           
-```docker build . -t huxlee/clustereye:v1.0.0```                            
-```docker push huxlee/clustereye:v1.0.0```                            
-Edit deployment to use the new image        
+https://hub.docker.com/r/huxlee/clustereye   
 
 #### Run the application on kubernetes
 ### Deployment option 1
