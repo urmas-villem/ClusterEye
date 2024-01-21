@@ -58,6 +58,5 @@ kubectl create secret docker-registry docker-credentials --docker-username=huxle
 Write-Host "Docker secret created" -ForegroundColor Green
 Write-Host "***************************"
 Write-Host "**Environment setup ready**"
-Write-Host "***************************"
-                                                     
+Write-Host "***************************"  
 ``` 
