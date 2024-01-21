@@ -43,7 +43,7 @@ do {
 Write-Host "Logged into ArgoCD." -ForegroundColor Green
 
 argocd account update-password --current-password $initial_password --new-password password
-Write-Host "ArgoCD password updated to "user:admin pw:password" -ForegroundColor Green
+Write-Host "ArgoCD password updated to 'user:admin pw:password'" -ForegroundColor Green
                
 argocd app create clustereye --repo https://github.com/urmas-villem/ClusterEye.git --path kubernetes --dest-server https://kubernetes.default.svc --dest-namespace default --sync-policy automated
 
