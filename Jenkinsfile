@@ -43,15 +43,19 @@ pipeline {
         stage('Trigger ArgoCD Restart') {
             steps {
                 script {
-                    def response = sh(script: "curl -X POST ${ARGOCD_URL}/api/v1/applications/${APP_NAME}/actions/run", 
-                                        returnStatus: true,
-                                        input: "{\"action\": \"restart\", \"kind\": \"Deployment\"}")
-
-                    if (response == 0) {
-                        echo "ArgoCD action 'restart' triggered successfully for '${APP_NAME}'."
-                    } else {
-                        error "Failed to trigger ArgoCD action."
-                    }
+                    def argoCdCommand = "argocd app actions run clustereye restart --kind Deployment"
+                    sh """
+                        set +e
+                        $argoCdCommand
+                        exitCode=\$?
+                        set -e
+                        if [ \$exitCode -eq 0 ]; then
+                            echo "ArgoCD restart action triggered successfully."
+                        else
+                            echo "Failed to trigger ArgoCD restart action."
+                            currentBuild.result = 'FAILURE'
+                        fi
+                    """
                 }
             }
         }
