@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: alertmanager
+  name: testsoftware
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/urmas-villem/ClusterEye.git
     targetRevision: HEAD
-    path: kubernetes/Testsoftware/Deployments/alertmanager
+    path: kubernetes/Testsoftware
   destination:
     server: https://kubernetes.default.svc
     namespace: default
