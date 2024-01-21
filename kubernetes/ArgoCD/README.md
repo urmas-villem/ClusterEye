@@ -1,8 +1,3 @@
-# This folder contains ArgoCD setup script + Clustereye and Jenkins deployment script into a fresh Kubernetes cluster.
-
-[First install argocd CLI](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
-
-Using Powershell:
 ``` 
 kubectl create namespace argocd
 kubectl create namespace jenkins
