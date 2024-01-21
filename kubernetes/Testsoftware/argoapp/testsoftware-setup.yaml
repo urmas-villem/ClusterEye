@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/urmas-villem/ClusterEye.git
     targetRevision: HEAD
-    path: kubernetes/Testsoftware/deployments
+    path: kubernetes/Testsoftware/Deployments
   destination:
     server: https://kubernetes.default.svc
     namespace: default
