@@ -1,4 +1,3 @@
-``` 
 kubectl create namespace argocd
 kubectl create namespace jenkins
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
@@ -54,4 +53,3 @@ Write-Host "Docker secret created" -ForegroundColor Green
 Write-Host "***************************"
 Write-Host "**Environment setup ready**"
 Write-Host "***************************"  
-``` 
