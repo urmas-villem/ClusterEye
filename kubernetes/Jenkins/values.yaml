@@ -332,14 +332,31 @@ jenkins:
     # etc.  Best reference is https://<jenkins_url>/configuration-as-code/reference.  The example below creates a welcome message:
     JCasC:
       defaultConfig: true
+      configScripts:
+        cluster-eye-job: |-
+          jobs:
+            - script: >
+                pipelineJob('ClusterEye-deployment') {
+                    description('ClusterEye deployment.')
+                    definition {
+                        cpsScm {
+                            scm {
+                                git {
+                                    remote {
+                                        url('https://github.com/urmas-villem/ClusterEye.git')
+                                    }
+                                    branches('*/main')
+                                }
+                            }
+                            scriptPath('Jenkinsfile')
+                            lightweight(true)
+                        }
+                    }
+                    properties {
+                        disableConcurrentBuilds()
+                    }
+                }
       configUrls: []
-      # - https://acme.org/jenkins.yaml
-      # Remote URL:s for configuration files.
-      configScripts: {}
-      #  welcome-message: |
-      #    jenkins:
-      #      systemMessage: Welcome to our CI\CD server.  This Jenkins is configured and managed 'as code'.
-      # Allows adding to the top-level security JCasC section. For legacy,  default the chart includes apiToken configurations
       security:
         apiToken:
           creationOfLegacyTokenEnabled: false
