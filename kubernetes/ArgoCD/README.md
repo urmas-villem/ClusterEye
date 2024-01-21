@@ -41,13 +41,20 @@ do {
     }
 } while (-not $loginSuccess)
 Write-Host "Logged into ArgoCD." -ForegroundColor Green
+
+argocd account update-password --current-password $initial_password --new-password password
+Write-Host "ArgoCD password updated to "user:admin pw:password" -ForegroundColor Green
                
 argocd app create clustereye --repo https://github.com/urmas-villem/ClusterEye.git --path kubernetes --dest-server https://kubernetes.default.svc --dest-namespace default --sync-policy automated
 
 kubectl apply -n argocd -f https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/kubernetes/Jenkins/jenkins.yaml
 
 $dockerPassword = Read-Host "Enter Docker registry password" -AsSecureString
-
-kubectl create secret docker-registry docker-credentials --docker-username=huxlee --docker-password=$dockerPassword --docker-email=random@random.com --namespace jenkins
+$plainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($dockerPassword))
+kubectl create secret docker-registry docker-credentials --docker-username=huxlee --docker-password=$plainPassword --docker-email=random@random.com --namespace jenkins
+Write-Host "Docker secret created" -ForegroundColor Green
+Write-Host "***************************"
+Write-Host "**Environment setup ready**"
+Write-Host "***************************"
                                                      
 ``` 
