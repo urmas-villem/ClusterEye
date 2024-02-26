@@ -43,7 +43,8 @@ function updateMetricsFromCache() {
     }
 }
 
-export async function sendSlackNotification(message) {
+// Function to send a Slack notification
+async function sendSlackNotification(message) {
     const webhookUrl = process.env.SLACK_WEBHOOK_URL;
     try {
         await fetch(webhookUrl, {
@@ -76,6 +77,7 @@ app.get('/metrics', async (req, res) => {
     res.end(await register.metrics());
 });
 
+// Endpoint to trigger a Slack notification
 app.post('/send-slack-notification', express.json(), async (req, res) => {
     try {
         const message = req.body.message;

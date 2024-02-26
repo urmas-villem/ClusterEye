@@ -6,7 +6,7 @@ pipeline {
   }
   environment {
     APP_NAME = "ClusterEye"
-    RELEASE = "v1.0"
+    RELEASE = "dev-v1.0"
     IMAGE_NAME = "huxlee" + "/" + "clustereye"
     IMAGE_TAG = "${RELEASE}.${BUILD_NUMBER}"
   }
