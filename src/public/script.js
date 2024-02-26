@@ -1,4 +1,4 @@
-import { formatDate, isDatePassed, getTimeDifferenceMessage, sendSlackNotificationToServer } from './utility.js';
+import { formatDate, isDatePassed, getTimeDifferenceMessage } from './utility.js';
 
 export async function fetchAndDisplayPodImages(resetTimer = true) {
     document.getElementById('loadingMessage').style.display = 'block';
@@ -35,14 +35,6 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
 
             const formattedEolDate = formatDate(item.eolDate);
             const timeDiffMessage = getTimeDifferenceMessage(item.eolDate);
-
-            const daysMatch = timeDiffMessage.match(/(\d+) day/);
-            const daysRemaining = daysMatch ? parseInt(daysMatch[1], 10) : null;
-
-            if (versionMismatch && !eolDatePassed && daysRemaining !== null && daysRemaining <= 167) {
-                const message = `Version mismatch found for ${item.containerName}. EOL in ${daysRemaining} days.`;
-                sendSlackNotificationToServer(message);
-            }
 
             table += `<tr>
                         <td>${item.containerName}</td>

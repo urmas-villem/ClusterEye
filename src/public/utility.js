@@ -43,17 +43,3 @@ export function getTimeDifferenceMessage(eolDate) {
         return `(Ended ${Math.abs(days)} day${Math.abs(days) !== 1 ? 's' : ''} ago)`;
     }
 }
-
-export async function sendSlackNotificationToServer(message) {
-    try {
-        await fetch('/send-slack-notification', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message })
-        });
-    } catch (error) {
-        console.error('Error sending Slack notification through server:', error);
-    }
-}

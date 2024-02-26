@@ -17,6 +17,15 @@ async function fetchSoftwareConfig() {
   }
 }
 
+function isDatePassed(eolDate) {
+  if (!eolDate || isNaN(Date.parse(eolDate))) {
+      return false;
+  }
+  const today = new Date();
+  const eol = new Date(eolDate);
+  return today > eol;
+}
+
 async function fetchLatestImageTag(commandArray) {
   const networkErrorMessage = 'Network error occurred with getting latest version, try again in a few minutes';
   try {
@@ -114,6 +123,9 @@ async function getRunningPodImages() {
       } else {
         containerObj.eolDate = 'EOL information not available';
       }
+      const isVersionMismatch = containerObj.imageVersionUsedInCluster !== containerObj.newestImageAvailable;
+      const eolPassed = isDatePassed(containerObj.eolDate);
+      containerObj.notifyOrNot = isVersionMismatch && !eolPassed;
     }
 
     console.log(containerObjects);
