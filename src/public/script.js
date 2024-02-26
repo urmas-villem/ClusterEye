@@ -39,7 +39,11 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
             const daysMatch = timeDiffMessage.match(/(\d+) day/);
             const daysRemaining = daysMatch ? parseInt(daysMatch[1], 10) : null;
 
-            if (versionMismatch && daysRemaining !== null && daysRemaining <= 10) {
+            console.log(daysMatch)
+            console.log(daysRemaining)
+            console.log(versionMismatch)
+
+            if (versionMismatch && daysRemaining !== null && daysRemaining <= 166) {
                 await sendSlackNotification();
             }
 
