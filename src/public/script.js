@@ -1,4 +1,6 @@
-import { formatDate, isDatePassed, getTimeDifferenceMessage, sendSlackNotification } from './utility.js';
+import { formatDate, isDatePassed, getTimeDifferenceMessage } from './utility.js';
+
+import { sendSlackNotification } from '../server.js';
 
 export async function fetchAndDisplayPodImages(resetTimer = true) {
     document.getElementById('loadingMessage').style.display = 'block';
@@ -21,7 +23,7 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
         table += '<th>Notes</th>';
         table += '</tr>';
 
-        for (const item of data) {
+        data.forEach(item => {
             const versionMismatch = item.imageVersionUsedInCluster !== item.newestImageAvailable;
             const versionCellClass = versionMismatch ? 'version-mismatch' : '';
             const eolDatePassed = isDatePassed(item.eolDate);
@@ -39,12 +41,9 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
             const daysMatch = timeDiffMessage.match(/(\d+) day/);
             const daysRemaining = daysMatch ? parseInt(daysMatch[1], 10) : null;
 
-            console.log(daysMatch)
-            console.log(daysRemaining)
-            console.log(versionMismatch)
-
-            if (versionMismatch && daysRemaining !== null && daysRemaining <= 166) {
-                await sendSlackNotification();
+            if (versionMismatch && !eolDatePassed && daysRemaining !== null && daysRemaining <= 167) {
+                const message = `Version mismatch found for ${item.containerName}. EOL in ${daysRemaining} days.`;
+                sendSlackNotification(message);
             }
 
             table += `<tr>
@@ -55,7 +54,7 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
                         <td>${item.newestImageAvailable}</td>
                         <td>${item.note}</td>
                       </tr>`;
-        };
+        });
 
         table += '</table>';
         container.innerHTML += table;

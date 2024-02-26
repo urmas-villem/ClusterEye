@@ -43,6 +43,22 @@ function updateMetricsFromCache() {
     }
 }
 
+export async function sendSlackNotification(message) {
+    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+    try {
+        await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: message })
+        });
+    } catch (error) {
+        console.error('Error sending Slack notification:', error);
+        throw error;
+    }
+}
+
 // Endpoint to trigger cache and Prometheus metrics updates
 app.post('/trigger-update', async (req, res) => {
     await updateCache();
@@ -58,6 +74,16 @@ app.get('/pod-images', (req, res) => {
 app.get('/metrics', async (req, res) => {
     res.set('Content-Type', register.contentType);
     res.end(await register.metrics());
+});
+
+app.post('/send-slack-notification', express.json(), async (req, res) => {
+    try {
+        const message = req.body.message;
+        await sendSlackNotification(message);
+        res.status(200).send('Notification sent to Slack');
+    } catch (error) {
+        res.status(500).send('Failed to send notification to Slack');
+    }
 });
 
 // Start server and initialize cache update and metrics update
