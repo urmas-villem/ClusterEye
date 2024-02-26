@@ -45,7 +45,7 @@ export function getTimeDifferenceMessage(eolDate) {
 }
 
 export async function sendSlackNotification() {
-    const webhookUrl = 'https://hooks.slack.com/services/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';
+    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
     try {
         await fetch(webhookUrl, {
             method: 'POST',
