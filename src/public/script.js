@@ -1,4 +1,4 @@
-import { formatDate, isDatePassed, getTimeDifferenceMessage } from './utility.js';
+import { formatDate, isDatePassed, getTimeDifferenceMessage, sendSlackNotification } from './utility.js';
 
 export async function fetchAndDisplayPodImages(resetTimer = true) {
     document.getElementById('loadingMessage').style.display = 'block';
@@ -21,7 +21,7 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
         table += '<th>Notes</th>';
         table += '</tr>';
 
-        data.forEach(item => {
+        for (const item of data) {
             const versionMismatch = item.imageVersionUsedInCluster !== item.newestImageAvailable;
             const versionCellClass = versionMismatch ? 'version-mismatch' : '';
             const eolDatePassed = isDatePassed(item.eolDate);
@@ -36,6 +36,13 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
             const formattedEolDate = formatDate(item.eolDate);
             const timeDiffMessage = getTimeDifferenceMessage(item.eolDate);
 
+            const daysMatch = timeDiffMessage.match(/(\d+) day/);
+            const daysRemaining = daysMatch ? parseInt(daysMatch[1], 10) : null;
+
+            if (versionMismatch && daysRemaining !== null && daysRemaining <= 10) {
+                await sendSlackNotification();
+            }
+
             table += `<tr>
                         <td>${item.containerName}</td>
                         <td>${item.imageRepository}</td>
@@ -44,7 +51,7 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
                         <td>${item.newestImageAvailable}</td>
                         <td>${item.note}</td>
                       </tr>`;
-        });
+        };
 
         table += '</table>';
         container.innerHTML += table;
