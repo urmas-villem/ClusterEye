@@ -125,7 +125,7 @@ async function getRunningPodImages() {
       }
       const isVersionMismatch = containerObj.imageVersionUsedInCluster !== containerObj.newestImageAvailable;
       const eolPassed = isDatePassed(containerObj.eolDate);
-      containerObj.notifyOrNot = isVersionMismatch && !eolPassed;
+      containerObj.sendToSlack = isVersionMismatch && eolPassed;
     }
 
     console.log(containerObjects);
