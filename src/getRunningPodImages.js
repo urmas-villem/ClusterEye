@@ -18,6 +18,10 @@ async function fetchSoftwareConfig() {
 }
 
 function isDatePassed(eolDate) {
+  if (eolDate === 'EOL information not available') {
+      return true;
+  }
+
   if (!eolDate || isNaN(Date.parse(eolDate))) {
       return false;
   }
