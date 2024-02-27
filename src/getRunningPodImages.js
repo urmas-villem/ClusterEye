@@ -32,7 +32,7 @@ function isDatePassed(eolDate) {
 
 function eolDays(eolDate) {
   if (!eolDate || isNaN(Date.parse(eolDate))) {
-      return ''; // Return 0 or some default value if the date is invalid
+      return '';
   }
 
   const today = new Date();

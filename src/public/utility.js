@@ -39,7 +39,7 @@ export function getTimeDifferenceMessage(eolDate) {
 
     if (timeDifference > 0) {
         return `(Ends in ${days} day${days !== 1 ? 's' : ''})`;
-    } else if (timeDifference = 0) {
+    } else if (timeDifference === 0) {
         return `(Ends today : ''})`;
     } else {
         return `(Ended ${Math.abs(days)} day${Math.abs(days) !== 1 ? 's' : ''} ago)`;
