@@ -85,7 +85,7 @@ async function sendSlackNotification() {
                                 elements: [
                                     {
                                         type: "mrkdwn",
-                                        text: `Version used: \`${item.imageVersionUsedInCluster}\`, newest image: \`${item.newestImageAvailable}\``
+                                        text: `Version used: \`${item.imageVersionUsedInCluster}\` newest image: \`${item.newestImageAvailable}\``
                                     }
                                 ]
                             },
@@ -94,7 +94,7 @@ async function sendSlackNotification() {
                                 elements: [
                                     {
                                         type: "mrkdwn",
-                                        text: `_<!date^${currentTimestamp}^{date} at {time}|{date} at {time}>_`
+                                        text: `_<!date^${currentTimestamp}^{date} {time}|{date} {time}>_`
                                     }
                                 ]
                             }
