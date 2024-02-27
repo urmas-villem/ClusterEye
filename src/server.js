@@ -78,28 +78,6 @@ async function sendSlackNotification() {
     }
 }
 
-async function sendSlackNotification() {
-    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
-
-    for (const item of cache) {
-        if (item.sendToSlack) {
-            const message = `${item.containerName} for (env) needs a version upgrade\nVersion used in cluster: ${item.imageVersionUsedInCluster}, Newest image available: ${item.newestImageAvailable}`;
-            
-            try {
-                await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ text: message })
-                });
-            } catch (error) {
-                console.error(`Error sending Slack notification for ${item.containerName}:`, error);
-            }
-        }
-    }
-}
-
 // Endpoint to trigger cache and Prometheus metrics updates
 app.post('/trigger-update', async (req, res) => {
     await updateCache();
