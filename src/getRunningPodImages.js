@@ -30,6 +30,23 @@ function isDatePassed(eolDate) {
   return today > eol;
 }
 
+function eolDays(eolDate) {
+  if (!eolDate || isNaN(Date.parse(eolDate))) {
+      return ''; // Return 0 or some default value if the date is invalid
+  }
+
+  const today = new Date();
+  const eol = new Date(eolDate);
+
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const eolStart = new Date(eol.getFullYear(), eol.getMonth(), eol.getDate());
+
+  const timeDifference = eolStart - todayStart;
+  const days = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+  return days;
+}
+
 async function fetchLatestImageTag(commandArray) {
   const networkErrorMessage = 'Network error occurred with getting latest version, try again in a few minutes';
   try {
@@ -127,6 +144,7 @@ async function getRunningPodImages() {
       } else {
         containerObj.eolDate = 'EOL information not available';
       }
+      containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
       const isVersionMismatch = containerObj.imageVersionUsedInCluster !== containerObj.newestImageAvailable;
       const eolPassed = isDatePassed(containerObj.eolDate);
       containerObj.sendToSlack = isVersionMismatch && eolPassed;
