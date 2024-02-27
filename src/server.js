@@ -66,13 +66,14 @@ async function sendSlackNotification() {
     // Send notifications to environment
     for (const item of cache) {
         if (item.sendToSlack) {
+            //apply formating
             const payload = {
                 attachments: [
                     {
                         color: "#f2c744",
                         blocks: [
                             {
-                                type: "header",
+                                type: "section",
                                 text: {
                                     type: "plain_text",
                                     text: `${item.containerName} for ${env} needs a version upgrade`,
@@ -84,7 +85,7 @@ async function sendSlackNotification() {
                                 elements: [
                                     {
                                         type: "mrkdwn",
-                                        text: `Version used: ${item.imageVersionUsedInCluster}`
+                                        text: `Version used: \`${item.imageVersionUsedInCluster}\``
                                     }
                                 ]
                             },
@@ -93,7 +94,7 @@ async function sendSlackNotification() {
                                 elements: [
                                     {
                                         type: "mrkdwn",
-                                        text: `Newest image: ${item.newestImageAvailable}`
+                                        text: `Newest image: \`${item.newestImageAvailable}\``
                                     }
                                 ]
                             }
