@@ -46,6 +46,40 @@ function updateMetricsFromCache() {
 
 async function sendSlackNotification() {
     const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+    const environmentMapping = {
+        '115304599867': 'dev infra',
+        // more here later
+    };
+
+    const accountNumberRegex = /(\d+)\.dkr\.ecr\..*\.amazonaws\.com/;
+
+    for (const item of cache) {
+        if (item.sendToSlack) {
+            const match = item.imageRepository.match(accountNumberRegex);
+            let env = 'unknown environment';
+            if (match && match[1] && environmentMapping[match[1]]) {
+                env = environmentMapping[match[1]];
+            }
+
+            const message = `${item.containerName} for ${env} needs a version upgrade\nVersion used in cluster: ${item.imageVersionUsedInCluster}, Newest image available: ${item.newestImageAvailable}`;
+            
+            try {
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: message })
+                });
+            } catch (error) {
+                console.error(`Error sending Slack notification for ${item.containerName}:`, error);
+            }
+        }
+    }
+}
+
+async function sendSlackNotification() {
+    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
 
     for (const item of cache) {
         if (item.sendToSlack) {
