@@ -52,15 +52,20 @@ async function sendSlackNotification() {
     };
 
     const accountNumberRegex = /(\d+)\.dkr\.ecr\..*\.amazonaws\.com/;
+    let env = 'unknown environment';
 
+    // Determine environment
+    for (const item of cache) {
+        const match = item.imageRepository.match(accountNumberRegex);
+        if (match && match[1] && environmentMapping[match[1]]) {
+            env = environmentMapping[match[1]];
+            break; // Break after first match
+        }
+    }
+
+    // Send notifications with determined environment
     for (const item of cache) {
         if (item.sendToSlack) {
-            const match = item.imageRepository.match(accountNumberRegex);
-            let env = 'unknown environment';
-            if (match && match[1] && environmentMapping[match[1]]) {
-                env = environmentMapping[match[1]];
-            }
-
             const message = `${item.containerName} for ${env} needs a version upgrade\nVersion used in cluster: ${item.imageVersionUsedInCluster}, Newest image available: ${item.newestImageAvailable}`;
             
             try {
