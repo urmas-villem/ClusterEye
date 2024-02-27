@@ -67,6 +67,7 @@ async function sendSlackNotification() {
     for (const item of cache) {
         if (item.sendToSlack) {
             //apply formating
+            const currentTimestamp = Math.floor(Date.now() / 1000);
             const payload = {
                 attachments: [
                     {
@@ -93,7 +94,7 @@ async function sendSlackNotification() {
                                 elements: [
                                     {
                                         type: "mrkdwn",
-                                        text: "<!date^1709040728^{date} at {time}|{date} at {time}>"
+                                        text: `<!date^${currentTimestamp}^{date} at {time}|{date} at {time}>`
                                     }
                                 ]
                             }
