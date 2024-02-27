@@ -4,6 +4,7 @@ const express = require('express');
 const path = require('path');
 const promClient = require('prom-client');
 const { getRunningPodImages } = require('./getRunningPodImages');
+const fetch = require('node-fetch');
 
 const PORT = 9191;
 const HOST = '0.0.0.0';
@@ -63,18 +64,41 @@ async function sendSlackNotification() {
         }
     }
 
-    // Send notifications with determined environment
+    // Send notifications to environment
     for (const item of cache) {
         if (item.sendToSlack) {
-            const message = `:fast_forward: *${item.containerName}* for \`${env}\` needs a version upgrade\n>Version used: \`${item.imageVersionUsedInCluster}\`\n>Newest image: \`${item.newestImageAvailable}\``;
-            
+            const payload = {
+                blocks: [
+                    {
+                        type: "section",
+                        text: {
+                            type: "mrkdwn",
+                            text: `:fast_forward: *${item.containerName}* for \`${env}\` needs a version upgrade`
+                        }
+                    },
+                    {
+                        type: "context",
+                        elements: [
+                            {
+                                type: "mrkdwn",
+                                text: `>Version used: \`${item.imageVersionUsedInCluster}\``
+                            },
+                            {
+                                type: "mrkdwn",
+                                text: `>Newest image: \`${item.newestImageAvailable}\``
+                            }
+                        ]
+                    }
+                ]
+            };
+
             try {
                 await fetch(webhookUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ text: message })
+                    body: JSON.stringify(payload)
                 });
             } catch (error) {
                 console.error(`Error sending Slack notification for ${item.containerName}:`, error);
