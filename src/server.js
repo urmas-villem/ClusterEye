@@ -8,6 +8,8 @@ const { getRunningPodImages } = require('./getRunningPodImages');
 const PORT = 9191;
 const HOST = '0.0.0.0';
 const UPDATE_INTERVAL = 60 * 60 * 1000; // 1 hour
+const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
+let lastNotificationTime = Date.now();
 
 const app = express();
 let cache = null;
@@ -30,7 +32,11 @@ async function updateCache() {
         cache = await getRunningPodImages();
         lastUpdated = Date.now();
         updateMetricsFromCache();
-        await sendSlackNotification();
+
+        if (Date.now() - lastNotificationTime >= ONE_WEEK_IN_MS) {
+            await sendSlackNotification();
+            lastNotificationTime = Date.now();
+        }
     } catch (error) {
         console.error('Error updating cache:', error);
     }
