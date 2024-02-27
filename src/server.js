@@ -4,7 +4,6 @@ const express = require('express');
 const path = require('path');
 const promClient = require('prom-client');
 const { getRunningPodImages } = require('./getRunningPodImages');
-const fetch = require('node-fetch');
 
 const PORT = 9191;
 const HOST = '0.0.0.0';
