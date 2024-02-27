@@ -63,18 +63,52 @@ async function sendSlackNotification() {
         }
     }
 
-    // Send notifications with determined environment
+    // Send notifications to environment
     for (const item of cache) {
         if (item.sendToSlack) {
-            const message = `:arrow_right: *${item.containerName}* for \`${env}\` needs a version upgrade\n>Version used: \`${item.imageVersionUsedInCluster}\`\n>Newest image: \`${item.newestImageAvailable}\``;
-            
+            const payload = {
+                attachments: [
+                    {
+                        color: "#f2c744",
+                        blocks: [
+                            {
+                                type: "header",
+                                text: {
+                                    type: "plain_text",
+                                    text: `${item.containerName} for ${env} needs a version upgrade`,
+                                    emoji: true
+                                }
+                            },
+                            {
+                                type: "context",
+                                elements: [
+                                    {
+                                        type: "mrkdwn",
+                                        text: `Version used: ${item.imageVersionUsedInCluster}`
+                                    }
+                                ]
+                            },
+                            {
+                                type: "context",
+                                elements: [
+                                    {
+                                        type: "mrkdwn",
+                                        text: `Newest image: ${item.newestImageAvailable}`
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            };
+
             try {
                 await fetch(webhookUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ text: message })
+                    body: JSON.stringify(payload)
                 });
             } catch (error) {
                 console.error(`Error sending Slack notification for ${item.containerName}:`, error);
