@@ -37,8 +37,10 @@ export function getTimeDifferenceMessage(eolDate) {
 
     const days = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
 
-    if (timeDifference >= 0) {
+    if (timeDifference > 0) {
         return `(Ends in ${days} day${days !== 1 ? 's' : ''})`;
+    } else if (timeDifference = 0) {
+        return `(Ends today : ''})`;
     } else {
         return `(Ended ${Math.abs(days)} day${Math.abs(days) !== 1 ? 's' : ''} ago)`;
     }
