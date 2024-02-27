@@ -63,41 +63,18 @@ async function sendSlackNotification() {
         }
     }
 
-    // Send notifications to environment
+    // Send notifications with determined environment
     for (const item of cache) {
         if (item.sendToSlack) {
-            const payload = {
-                blocks: [
-                    {
-                        type: "section",
-                        text: {
-                            type: "mrkdwn",
-                            text: `:fast_forward: *${item.containerName}* for \`${env}\` needs a version upgrade`
-                        }
-                    },
-                    {
-                        type: "context",
-                        elements: [
-                            {
-                                type: "mrkdwn",
-                                text: `>Version used: \`${item.imageVersionUsedInCluster}\``
-                            },
-                            {
-                                type: "mrkdwn",
-                                text: `>Newest image: \`${item.newestImageAvailable}\``
-                            }
-                        ]
-                    }
-                ]
-            };
-
+            const message = `:arrow_right: *${item.containerName}* for \`${env}\` needs a version upgrade\n>Version used: \`${item.imageVersionUsedInCluster}\`\n>Newest image: \`${item.newestImageAvailable}\``;
+            
             try {
                 await fetch(webhookUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ text: message })
                 });
             } catch (error) {
                 console.error(`Error sending Slack notification for ${item.containerName}:`, error);
