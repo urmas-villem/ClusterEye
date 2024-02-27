@@ -47,7 +47,7 @@ function updateMetricsFromCache() {
 async function sendSlackNotification() {
     const webhookUrl = process.env.SLACK_WEBHOOK_URL;
     const environmentMapping = {
-        '115304599867': 'dev infra',
+        '115304599867': 'dev',
         // more here later
     };
 
@@ -76,7 +76,7 @@ async function sendSlackNotification() {
                                 type: "section",
                                 text: {
                                     type: "plain_text",
-                                    text: `${item.containerName} for ${env} needs a version upgrade`,
+                                    text: `${item.containerName} for \`${env}\` needs a version upgrade`,
                                     emoji: true
                                 }
                             },
