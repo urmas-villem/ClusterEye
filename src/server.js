@@ -72,12 +72,14 @@ async function sendSlackNotification() {
                 attachments: [
                     {
                         color: "#f2c744",
+                        footer: "footer",
+                        ts: currentTimestamp,
                         blocks: [
                             {
                                 type: "section",
                                 text: {
                                     type: "mrkdwn",
-                                    text: `*${item.containerName} for* \`${env}\` *needs a version upgrade*`
+                                    text: `*${item.containerName} for* \`${env}\` *can be upgraded to a newer version*`
                                 }
                             },
                             {
@@ -98,9 +100,7 @@ async function sendSlackNotification() {
                                     }
                                 ]
                             }
-                        ],
-                        footer: "footer",
-                        ts: currentTimestamp,
+                        ]
                     }
                 ]
             };
