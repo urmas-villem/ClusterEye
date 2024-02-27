@@ -66,7 +66,7 @@ async function sendSlackNotification() {
     // Send notifications with determined environment
     for (const item of cache) {
         if (item.sendToSlack) {
-            const message = `:fast_forward_button: *${item.containerName}* for \```${env}\``` needs a version upgrade\n>Version used in cluster: \`${item.imageVersionUsedInCluster}\`, Newest image available: \`${item.newestImageAvailable}\``;
+            const message = `:fast_forward_button: *${item.containerName}* for \`\`\`${env}\`\`\` needs a version upgrade\n>Version used in cluster: \`${item.imageVersionUsedInCluster}\`, Newest image available: \`${item.newestImageAvailable}\``;
             
             try {
                 await fetch(webhookUrl, {
