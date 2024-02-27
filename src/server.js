@@ -49,7 +49,7 @@ async function sendSlackNotification() {
 
     for (const item of cache) {
         if (item.sendToSlack) {
-            const message = `Notification for ${item.containerName}: version mismatch or EOL passed.`;
+            const message = `${item.containerName} for (env) needs a version upgrade.\n Version used in cluster: ${item.imageVersionUsedInCluster}, Newest image available: ${item.newestImageAvailable}`;
             
             try {
                 await fetch(webhookUrl, {
