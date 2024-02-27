@@ -30,7 +30,7 @@ async function updateCache() {
         cache = await getRunningPodImages();
         lastUpdated = Date.now();
         updateMetricsFromCache();
-        await checkAndNotify();
+        await sendSlackNotification();
     } catch (error) {
         console.error('Error updating cache:', error);
     }
@@ -44,26 +44,24 @@ function updateMetricsFromCache() {
     }
 }
 
-async function sendSlackNotification(message) {
+async function sendSlackNotification() {
     const webhookUrl = process.env.SLACK_WEBHOOK_URL;
-    try {
-        await fetch(webhookUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ text: message })
-        });
-    } catch (error) {
-        console.error('Error sending Slack notification:', error);
-    }
-}
 
-async function checkAndNotify() {
     for (const item of cache) {
         if (item.sendToSlack) {
             const message = `Notification for ${item.containerName}: version mismatch or EOL passed.`;
-            await sendSlackNotification(message);
+            
+            try {
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: message })
+                });
+            } catch (error) {
+                console.error(`Error sending Slack notification for ${item.containerName}:`, error);
+            }
         }
     }
 }
