@@ -75,9 +75,8 @@ async function sendSlackNotification() {
                             {
                                 type: "section",
                                 text: {
-                                    type: "plain_text",
-                                    text: `${item.containerName} for \`${env}\` needs a version upgrade`,
-                                    emoji: true
+                                    type: "mrkdwn",
+                                    text: `*${item.containerName} for ${env} needs a version upgrade*`
                                 }
                             },
                             {
