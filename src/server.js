@@ -71,8 +71,6 @@ async function sendSlackNotification() {
                 attachments: [
                     {
                         color: "#f2c744",
-                        footer: "footer",
-                        ts: 123456789,
                         blocks: [
                             {
                                 type: "section",
