@@ -25,7 +25,7 @@ pipeline {
       steps {
         container(name: 'kaniko', shell: '/busybox/sh') {
           sh '''#!/busybox/sh
-            /kaniko/executor --dockerfile `pwd`/dockerfile --context `pwd` --use-new-run --destination=${IMAGE_NAME}:${IMAGE_TAG} --destination=${IMAGE_NAME}:latest
+            /kaniko/executor --dockerfile `pwd`/dockerfile --context `pwd` --single-snapshot --destination=${IMAGE_NAME}:${IMAGE_TAG} --destination=${IMAGE_NAME}:latest
           '''
         }
       }
