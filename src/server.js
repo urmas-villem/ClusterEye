@@ -67,13 +67,12 @@ async function sendSlackNotification() {
     for (const item of cache) {
         if (item.sendToSlack) {
             //apply formating
-            const currentTimestamp = Math.floor(Date.now() / 1000);
             const payload = {
                 attachments: [
                     {
                         color: "#f2c744",
                         footer: "footer",
-                        ts: currentTimestamp,
+                        ts: 123456789,
                         blocks: [
                             {
                                 type: "section",
