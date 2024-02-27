@@ -69,33 +69,38 @@ async function sendSlackNotification() {
             //apply formating
             const currentTimestamp = Math.floor(Date.now() / 1000);
             const payload = {
-                "attachments": [
+                attachments: [
                     {
-                        "color": "#f2c744",
-                        "blocks": [
+                        color: "#f2c744",
+                        blocks: [
                             {
-                                "type": "section",
-                                "text": {
-                                    "type": "mrkdwn",
-                                    "text": `*${item.containerName} for* \`${env}\` *needs a version upgrade*`
+                                type: "section",
+                                text: {
+                                    type: "mrkdwn",
+                                    text: `*${item.containerName} for* \`${env}\` *needs a version upgrade*`
                                 }
                             },
                             {
-                                "type": "context",
-                                "elements": [
+                                type: "context",
+                                elements: [
                                     {
-                                        "type": "mrkdwn",
-                                        "text": `*Version used:* \`${item.imageVersionUsedInCluster}\``
-                                    },
+                                        type: "mrkdwn",
+                                        text: `Version used: \`${item.imageVersionUsedInCluster}\``
+                                    }
+                                ]
+                            },
+                            {
+                                type: "context",
+                                elements: [
                                     {
-                                        "type": "mrkdwn",
-                                        "text": `*Newest image:* \`${item.newestImageAvailable}\``
+                                        type: "mrkdwn",
+                                        text: `Newest image: \`${item.newestImageAvailable}\``
                                     }
                                 ]
                             }
                         ],
-                        "footer": "Updated at",
-                        "ts": currentTimestamp
+                        footer: "footer",
+                        ts: currentTimestamp,
                     }
                 ]
             };
