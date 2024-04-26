@@ -111,11 +111,16 @@ async function getRunningPodImages() {
   try {
     const softwares = await fetchSoftwareConfig();
     const res = await coreV1Api.listPodForAllNamespaces();
+    const processedApps = new Set();
     const containerObjects = res.body.items.flatMap(pod => {
       const appName = pod.metadata.labels?.app;
+      if (processedApps.has(appName)) {
+        return [];
+      }
       const software = softwares.find(s => s.name === appName);
 
       if (software && pod.status.containerStatuses) {
+        processedApps.add(appName);
         return pod.status.containerStatuses
           .filter(status => {
             const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
@@ -123,8 +128,8 @@ async function getRunningPodImages() {
           })
           .map(status => ({
             containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
-            imageRepository: status.image.split(':')[0],
-            imageVersionUsedInCluster: status.image.split(':')[1],
+            imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
+            imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
             appName: appName,
             command: software.command,
             note: software.note || ''
