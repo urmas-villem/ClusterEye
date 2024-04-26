@@ -27,7 +27,7 @@ data:
     }
   istio: |
     {
-      "command": ["curl", "-s", "https://api.github.com/repos/istio/istio/releases", "|", "jq", "'.[0:20] | map(.tag_name)'", "|", "jq", "-r", "'.[]'", "|", "grep", "-v", "-E", "'beta|rc'", "|", "sort", "-V", "|", "tail", "-n", "1"],
+      "command": ["curl", "-s", "https://api.github.com/repos/istio/istio/releases", "|", "jq", "'.[0:20] | map(.tag_name)'", "|", "jq", "-r", "'.[]'", "|", "grep", "-v", "-E", "'beta|rc|alpha'", "|", "sort", "-V", "|", "tail", "-n", "1"],
       "eolUrl": "https://endoflife.date/api/istio.json",
       "note": "",
       "nameexception": "discovery"
