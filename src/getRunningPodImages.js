@@ -127,18 +127,15 @@ async function getRunningPodImages() {
             return status.name === containerNameToMatch;
           })
           .map(status => {
-            let baseImage = status.imageID && status.imageID.includes('@sha256') ? status.imageID : status.image;
-            let imageRepository = baseImage.split('@')[0].split(':')[0].replace('docker-pullable://', '');
+            let imageRepository = (status.imageID || status.image).split('@')[0].replace('docker-pullable://', '').split(':')[0];
             let imageVersionUsedInCluster = 'latest';
             const shaRegex = /sha256:([a-f0-9]{64})/;
-            const imageIdShaMatch = status.imageID ? shaRegex.exec(status.imageID) : null;
-            const imageShaMatch = shaRegex.exec(status.image);
-            if (status.image.includes(':') && !status.image.includes('@sha256')) {
-              imageVersionUsedInCluster = status.image.split(':')[1];
-            } else if (imageIdShaMatch) {
-              imageVersionUsedInCluster = `sha256:${imageIdShaMatch[1]}`;
-            } else if (imageShaMatch) {
-              imageVersionUsedInCluster = `sha256:${imageShaMatch[1]}`;
+            const versionFromImage = status.image.includes('@sha256:') ? status.image.split('@sha256:')[1] : status.image.split(':')[1];
+          
+            if (shaRegex.test(versionFromImage)) {
+              imageVersionUsedInCluster = versionFromImage.startsWith('sha256:') ? versionFromImage : `sha256:${versionFromImage}`;
+            } else {
+              imageVersionUsedInCluster = versionFromImage || 'latest';
             }
           
             return {
