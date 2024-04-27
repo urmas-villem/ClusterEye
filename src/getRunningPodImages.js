@@ -117,23 +117,33 @@ async function getRunningPodImages() {
       if (processedApps.has(appName)) {
         return [];
       }
+      processedApps.add(appName);
       const software = softwares.find(s => s.name === appName);
 
       if (software && pod.status.containerStatuses) {
-        processedApps.add(appName);
-        return pod.status.containerStatuses
-          .filter(status => {
-            const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
-            return status.name === containerNameToMatch;
-          })
-          .map(status => ({
+        return pod.status.containerStatuses.filter(status => {
+          const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
+          return status.name === containerNameToMatch;
+        }).map(status => {
+          let imageRepository, imageVersionUsedInCluster;
+
+          if (status.imageID && status.imageID.includes('@sha256')) {
+            imageRepository = status.imageID.split('@')[0];
+            imageVersionUsedInCluster = 'sha256:' + status.imageID.split('@')[1];
+          } else {
+            imageRepository = status.image.split('@')[0];
+            imageVersionUsedInCluster = status.image.includes('@sha256') ? 'sha256:' + status.image.split('@')[1] : status.image;
+          }
+
+          return {
             containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
-            imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
-            imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
+            imageRepository: imageRepository,
+            imageVersionUsedInCluster: imageVersionUsedInCluster,
             appName: appName,
             command: software.command,
             note: software.note || ''
-          }));
+          };
+        });
       }
       return [];
     });
