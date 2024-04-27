@@ -2,7 +2,7 @@
 FROM node:20.10.0-alpine as builder
 WORKDIR /work/
 COPY ./src/package*.json ./
-CMD pwd
+RUN pwd
 RUN npm install --omit=dev
 COPY ./src/ .
 
