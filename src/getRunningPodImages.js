@@ -140,16 +140,6 @@ async function getRunningPodImages() {
               note: software.note || ''
             };
           });
-
-            return {
-              containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
-              imageRepository: imageRepository,
-              imageVersionUsedInCluster: imageVersionUsedInCluster,
-              appName: appName,
-              command: software.command,
-              note: software.note || ''
-            };
-          });
       }
       return [];
     });
