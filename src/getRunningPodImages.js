@@ -107,11 +107,40 @@ async function fetchEOLDate(appName, version, eolUrl) {
   }
 }
 
-async function preProcess(containerObjects) {
+async function preProcess(containerObjects, maxPages = 5) {
+  const repositoryMap = {
+      'alertmanager': 'alertmanager',
+      'prometheus': 'prometheus'
+      // Additional mappings if necessary
+  };
+
   for (const containerObj of containerObjects) {
-    if (containerObj.imageVersionUsedInCluster.startsWith('sha256:')) {
-      containerObj.imageVersionUsedInCluster = 'this is a sha value';
-    }
+      if (containerObj.imageVersionUsedInCluster.startsWith('sha256:')) {
+          const sha = containerObj.imageVersionUsedInCluster;
+          const repository = repositoryMap[containerObj.appName];
+
+          if (!repository) {
+              console.error('Repository not defined for application:', containerObj.appName);
+              continue;
+          }
+
+          for (let page = 1; page <= maxPages; page++) {
+              const curlCommand = `curl -s "https://hub.docker.com/v2/namespaces/prom/repositories/${repository}/tags?page=${page}" | jq -r '.results[] | select(.images[].digest == "${sha}").name'`;
+              try {
+                  const { stdout, stderr } = await exec(curlCommand);
+                  if (stderr) {
+                      console.error('Error fetching image version:', stderr);
+                      continue;
+                  }
+                  if (stdout.trim()) {
+                      containerObj.imageVersionUsedInCluster = stdout.trim();
+                      break; 
+                  }
+              } catch (error) {
+                  console.error('Error executing curl command:', error);
+              }
+          }
+      }
   }
 }
 
