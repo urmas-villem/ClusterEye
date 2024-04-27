@@ -121,7 +121,7 @@ async function getRunningPodImages() {
           const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
           if (status.name !== containerNameToMatch) continue;
 
-          const imageDetails = status.imageID || status.image; // Use imageID if available, otherwise fallback to image
+          const imageDetails = status.imageID || status.image;
           const imageParts = imageDetails.split('@');
           const imageRepository = imageParts[0].replace('docker-pullable://', '').split(':')[0];
           let imageVersionUsedInCluster = 'latest';
@@ -140,7 +140,7 @@ async function getRunningPodImages() {
           if (software.eolUrl) {
               eolDate = await fetchEOLDate(appName, imageVersionUsedInCluster, software.eolUrl);
           }
-          if (software.command) {
+          if (software.command && typeof software.command === 'string') {
               newestImageAvailable = await fetchLatestImageTag(software.command.split(' '));
           }
 
@@ -152,7 +152,7 @@ async function getRunningPodImages() {
               imageRepository,
               imageVersionUsedInCluster,
               appName,
-              command: software.command,
+              command: software.command || 'No command provided',
               note: software.note || '',
               eolDate,
               newestImageAvailable,
