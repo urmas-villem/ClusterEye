@@ -66,6 +66,10 @@ async function fetchLatestImageTag(commandArray) {
 
 async function fetchEOLDate(appName, version, eolUrl) {
 
+  if (version.startsWith('sha256:')) {
+    return "Can't find EOL for SHA values";
+  }
+
   if (!eolUrl) {
     return 'EOL URL not provided';
   }
@@ -125,7 +129,7 @@ async function preProcess(containerObjects, maxPages = 5) {
           }
 
           for (let page = 1; page <= maxPages; page++) {
-              const curlCommand = `curl -s "https://hub.docker.com/v2/namespaces/prom/repositories/${repository}/tags?page=${page}" | jq -r '.results[] | select(.images[].digest == "${sha}").name'`;
+              const curlCommand = `curl -s "https://hub.docker.com/v2/namespaces/prom/repositories/${repository}/tags?page=${page}" | jq -r '.results[] | select(.images[].digest == "${sha}" and .name != "latest").name'`;
               try {
                   const { stdout, stderr } = await exec(curlCommand);
                   if (stderr) {
