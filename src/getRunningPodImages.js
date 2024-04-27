@@ -109,73 +109,74 @@ async function fetchEOLDate(appName, version, eolUrl) {
 
 async function getRunningPodImages() {
   try {
-    const softwares = await fetchSoftwareConfig();
-    const res = await coreV1Api.listPodForAllNamespaces();
-    const processedApps = new Set();
-    const containerObjects = res.body.items.flatMap(pod => {
-      const appName = pod.metadata.labels?.app;
-      if (processedApps.has(appName)) {
-        return [];
-      }
-      const software = softwares.find(s => s.name === appName);
+      const softwares = await fetchSoftwareConfig();
+      const res = await coreV1Api.listPodForAllNamespaces();
+      const processedApps = new Set();
+      const containerObjects = res.body.items.flatMap(pod => {
+          const appName = pod.metadata.labels?.app;
+          if (processedApps.has(appName)) {
+              return [];
+          }
+          const software = softwares.find(s => s.name === appName);
 
-      if (software && pod.status.containerStatuses) {
-        processedApps.add(appName);
-        return pod.status.containerStatuses
-          .filter(status => {
-            const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
-            return status.name === containerNameToMatch;
-          })
-          .map(status => {
-            let imageRepository = status.imageID.split('@')[0].replace('docker-pullable://', '').split(':')[0];
-            const shaRegex = /sha256:([a-f0-9]{64})/;
-            const imageIdShaMatch = shaRegex.exec(status.imageID);
-            const imageShaMatch = shaRegex.exec(status.image);
-          
-            let imageVersionUsedInCluster;
-            if (imageIdShaMatch) {
-              imageVersionUsedInCluster = `sha256:${imageIdShaMatch[1]}`;
-            } else if (imageShaMatch) {
-              imageVersionUsedInCluster = `sha256:${imageShaMatch[1]}`;
-            } else {
-              imageVersionUsedInCluster = status.image.split(':')[1] || 'latest';
-            }
-          
-            return {
-              containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
-              imageRepository: imageRepository,
-              imageVersionUsedInCluster: imageVersionUsedInCluster,
-              appName: appName,
-              command: software.command,
-              note: software.note || ''
-            };
-          });
-      }
-      return [];
-    });
+          if (software && pod.status.containerStatuses) {
+              processedApps.add(appName);
+              return pod.status.containerStatuses
+                  .filter(status => {
+                      const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
+                      return status.name === containerNameToMatch;
+                  })
+                  .map(status => {
+                      let imageRepository = (status.imageID || status.image).split('@')[0].replace('docker-pullable://', '').split(':')[0];
+                      let imageVersionUsedInCluster;
 
-    for (const containerObj of containerObjects) {
-      if (containerObj.command) {
-        containerObj.newestImageAvailable = await fetchLatestImageTag(containerObj.command);
-      }
-      const softwareConfig = softwares.find(s => s.name === containerObj.appName);
+                      const shaRegex = /sha256:([a-f0-9]{64})/;
+                      const imageIdShaMatch = shaRegex.exec(status.imageID);
+                      const imageShaMatch = shaRegex.exec(status.image);
 
-      if (softwareConfig && softwareConfig.eolUrl) {
-        containerObj.eolDate = await fetchEOLDate(containerObj.appName, containerObj.imageVersionUsedInCluster, softwareConfig.eolUrl);
-      } else {
-        containerObj.eolDate = 'EOL information not available';
-      }
-      containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
-      const isVersionMismatch = containerObj.imageVersionUsedInCluster !== containerObj.newestImageAvailable;
-      const eolPassed = isDatePassed(containerObj.eolDate);
-      containerObj.sendToSlack = isVersionMismatch && eolPassed;
-    }
+                      if (imageIdShaMatch) {
+                          imageVersionUsedInCluster = `sha256:${imageIdShaMatch[1]}`;
+                      } else if (imageShaMatch) {
+                          imageVersionUsedInCluster = `sha256:${imageShaMatch[1]}`;
+                      } else {
+                          imageVersionUsedInCluster = status.image.includes(':') ? status.image.split(':')[1] : 'latest';
+                      }
 
-    console.log(containerObjects);
-    return containerObjects;
+                      return {
+                          containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
+                          imageRepository: imageRepository,
+                          imageVersionUsedInCluster: imageVersionUsedInCluster,
+                          appName: appName,
+                          command: software.command,
+                          note: software.note || ''
+                      };
+                  });
+          }
+          return [];
+      });
+
+      for (const containerObj of containerObjects) {
+          if (containerObj.command) {
+              containerObj.newestImageAvailable = await fetchLatestImageTag(containerObj.command);
+          }
+          const softwareConfig = softwares.find(s => s.name === containerObj.appName);
+
+          if (softwareConfig && softwareConfig.eolUrl) {
+              containerObj.eolDate = await fetchEOLDate(containerObj.appName, containerObj.imageVersionUsedInCluster, softwareConfig.eolUrl);
+          } else {
+              containerObj.eolDate = 'EOL information not available';
+          }
+          containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
+          const isVersionMismatch = containerObj.imageVersionUsedInCluster !== containerObj.newestImageAvailable;
+          const eolPassed = isDatePassed(containerObj.eolDate);
+          containerObj.sendToSlack = isVersionMismatch && eolPassed;
+      }
+
+      console.log(containerObjects);
+      return containerObjects;
   } catch (error) {
-    console.error('Error:', error);
-    return [];
+      console.error('Error:', error);
+      return [];
   }
 }
 
