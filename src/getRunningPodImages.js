@@ -127,23 +127,19 @@ async function getRunningPodImages() {
             return status.name === containerNameToMatch;
           })
           .map(status => {
-            let imageRepository, rawVersion;
-            if (status.imageID) {
-              imageRepository = status.imageID.split('@')[0].replace('docker-pullable://', '').split(':')[0];
-              rawVersion = status.imageID.split('@sha256:')[1] || status.imageID.split(':')[1];
-            } else {
-              imageRepository = (status.image || '').split('@')[0].replace('docker-pullable://', '').split(':')[0];
-              rawVersion = (status.image || '').split('@sha256:')[1] || (status.image || '').split(':')[1] || 'latest';
-            }
-
-            const shaRegex = /^[a-f0-9]{64}$/;
-            let imageVersionUsedInCluster;
-
-            if (rawVersion && rawVersion.match(shaRegex)) {
-              imageVersionUsedInCluster = `sha256:${rawVersion}`;
-            } else {
-              imageVersionUsedInCluster = rawVersion;
-            }
+            const imageDetails = status.imageID || status.image;
+            let imageRepository = imageDetails.split('@')[0].replace('docker-pullable://', '').split(':')[0];
+            let rawVersion = imageDetails.includes('@sha256:') ? imageDetails.split('@sha256:')[1] : imageDetails.split(':')[1];
+          
+            return {
+              containerName: software.nameexception && software.nameexception !== "" ? software.nameexception : status.name,
+              imageRepository: imageRepository,
+              imageVersionUsedInCluster: rawVersion ? `sha256:${rawVersion}` : 'latest',
+              appName: appName,
+              command: software.command,
+              note: software.note || ''
+            };
+          });
 
             return {
               containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
