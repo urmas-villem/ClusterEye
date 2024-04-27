@@ -108,62 +108,72 @@ async function fetchEOLDate(appName, version, eolUrl) {
 }
 
 async function getRunningPodImages() {
-  const softwares = await fetchSoftwareConfig();
-  const res = await coreV1Api.listPodForAllNamespaces();
-  const containerObjects = [];
-
-  for (const pod of res.body.items) {
+  try {
+    const softwares = await fetchSoftwareConfig();
+    const res = await coreV1Api.listPodForAllNamespaces();
+    const processedApps = new Set();
+    const containerObjects = res.body.items.flatMap(pod => {
       const appName = pod.metadata.labels?.app;
+      if (processedApps.has(appName)) {
+        return [];
+      }
       const software = softwares.find(s => s.name === appName);
-      if (!software) continue;
 
-      for (const status of pod.status.containerStatuses) {
-          const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
-          if (status.name !== containerNameToMatch) continue;
-
-          const imageDetails = status.imageID || status.image;
-          const imageParts = imageDetails.split('@');
-          const imageRepository = imageParts[0].replace('docker-pullable://', '').split(':')[0];
-          let imageVersionUsedInCluster = 'latest';
-
-          if (imageParts.length > 1 && imageParts[1].startsWith('sha256:')) {
-              imageVersionUsedInCluster = imageParts[1];
-          } else {
-              const tagParts = imageDetails.split(':');
-              if (tagParts.length > 1 && !tagParts[1].includes('sha256')) {
-                  imageVersionUsedInCluster = tagParts[1];
-              }
-          }
-
-          let eolDate = 'EOL information not available';
-          let newestImageAvailable = 'Latest tag not available';
-          if (software.eolUrl) {
-              eolDate = await fetchEOLDate(appName, imageVersionUsedInCluster, software.eolUrl);
-          }
-          if (software.command && typeof software.command === 'string') {
-              newestImageAvailable = await fetchLatestImageTag(software.command.split(' '));
-          }
-
-          const isVersionMismatch = (imageVersionUsedInCluster !== newestImageAvailable);
-          const eolPassed = isDatePassed(eolDate);
-
-          containerObjects.push({
-              containerName: containerNameToMatch,
-              imageRepository,
-              imageVersionUsedInCluster,
-              appName,
-              command: software.command || 'No command provided',
-              note: software.note || '',
-              eolDate,
-              newestImageAvailable,
-              daysUntilEOL: eolDays(eolDate),
-              sendToSlack: isVersionMismatch && eolPassed
+      if (software && pod.status.containerStatuses) {
+        processedApps.add(appName);
+        return pod.status.containerStatuses
+          .filter(status => {
+            const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
+            return status.name === containerNameToMatch;
+          })
+          .map(status => {
+            let imageRepository = (status.imageID || status.image).split('@')[0].replace('docker-pullable://', '').split(':')[0];
+            let rawVersion = status.image.split('@sha256:')[1] || status.image.split(':')[1] || 'latest';
+            const shaRegex = /^[a-f0-9]{64}$/;
+            let imageVersionUsedInCluster;
+          
+            if (rawVersion.match(shaRegex)) {
+              imageVersionUsedInCluster = `sha256:${rawVersion}`;
+            } else {
+              imageVersionUsedInCluster = rawVersion;
+            }
+          
+            return {
+              containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
+              imageRepository: imageRepository,
+              imageVersionUsedInCluster: imageVersionUsedInCluster,
+              appName: appName,
+              command: software.command,
+              note: software.note || ''
+            };
           });
       }
-  }
+      return [];
+    });
 
-  console.log(containerObjects);
-  return containerObjects;
+    for (const containerObj of containerObjects) {
+      if (containerObj.command) {
+        containerObj.newestImageAvailable = await fetchLatestImageTag(containerObj.command);
+      }
+      const softwareConfig = softwares.find(s => s.name === containerObj.appName);
+
+      if (softwareConfig && softwareConfig.eolUrl) {
+        containerObj.eolDate = await fetchEOLDate(containerObj.appName, containerObj.imageVersionUsedInCluster, softwareConfig.eolUrl);
+      } else {
+        containerObj.eolDate = 'EOL information not available';
+      }
+      containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
+      const isVersionMismatch = containerObj.imageVersionUsedInCluster !== containerObj.newestImageAvailable;
+      const eolPassed = isDatePassed(containerObj.eolDate);
+      containerObj.sendToSlack = isVersionMismatch && eolPassed;
+    }
+
+    console.log(containerObjects);
+    return containerObjects;
+  } catch (error) {
+    console.error('Error:', error);
+    return [];
+  }
 }
 
 module.exports.getRunningPodImages = getRunningPodImages;
