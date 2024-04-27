@@ -126,14 +126,26 @@ async function getRunningPodImages() {
             const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
             return status.name === containerNameToMatch;
           })
-          .map(status => ({
-            containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
-            imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
-            imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
-            appName: appName,
-            command: software.command,
-            note: software.note || ''
-          }));
+          .map(status => {
+            let imageRepository = status.imageID ? status.imageID.replace('docker-pullable://', '').split('@')[0] : status.image.split('@')[0];
+            let imageVersionUsedInCluster;
+            if (status.imageID && status.imageID.includes('sha256:')) {
+              imageVersionUsedInCluster = 'sha256:' + status.imageID.split('sha256:')[1];
+            } else if (status.image.includes('sha256:')) {
+              imageVersionUsedInCluster = 'sha256:' + status.image.split('sha256:')[1];
+            } else {
+              imageVersionUsedInCluster = status.image.includes(':') ? status.image.split(':')[1] : 'latest';
+            }
+          
+            return {
+              containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
+              imageRepository: imageRepository,
+              imageVersionUsedInCluster: imageVersionUsedInCluster,
+              appName: appName,
+              command: software.command,
+              note: software.note || ''
+            };
+          });
       }
       return [];
     });
