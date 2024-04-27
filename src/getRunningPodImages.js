@@ -107,6 +107,14 @@ async function fetchEOLDate(appName, version, eolUrl) {
   }
 }
 
+async function preProcess(containerObjects) {
+  for (const containerObj of containerObjects) {
+    if (containerObj.imageVersionUsedInCluster.startsWith('sha256:')) {
+      containerObj.imageVersionUsedInCluster = 'this is a sha value';
+    }
+  }
+}
+
 async function getRunningPodImages() {
   try {
     const softwares = await fetchSoftwareConfig();
@@ -137,6 +145,8 @@ async function getRunningPodImages() {
       }
       return [];
     });
+
+    await preProcess(containerObjects);
 
     for (const containerObj of containerObjects) {
       if (containerObj.command) {
