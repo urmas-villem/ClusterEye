@@ -111,51 +111,43 @@ async function getRunningPodImages() {
   try {
     const softwares = await fetchSoftwareConfig();
     const res = await coreV1Api.listPodForAllNamespaces();
-    const processedApps = new Set();
-    const containerObjects = res.body.items.flatMap(pod => {
-      const appName = pod.metadata.labels?.app;
-      if (processedApps.has(appName)) {
-        return [];
-      }
-      const software = softwares.find(s => s.name === appName);
+    const containerObjects = [];
 
-      if (software && pod.status.containerStatuses) {
-        processedApps.add(appName);
-        return pod.status.containerStatuses
-          .filter(status => {
-            const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
-            return status.name === containerNameToMatch;
-          })
-          .map(status => {
-            const imageRepository = (status.imageID || status.image).split('@')[0].replace('docker-pullable://', '').split(':')[0];
-            let imageVersionUsedInCluster = 'latest';
+    res.body.items.forEach(pod => {
+      pod.status.containerStatuses.forEach(async status => {
+        const software = softwares.find(s => s.name === pod.metadata.labels?.app);
+        if (software) {
+          let imageRepository = status.imageID.split('@')[0].replace('docker-pullable://', '').split(':')[0];
+          let imageVersionUsedInCluster = 'latest';
+          const shaRegex = /sha256:([a-f0-9]{64})/;
+          const shaMatchImageID = shaRegex.exec(status.imageID);
+          const shaMatchImage = shaRegex.exec(status.image);
 
-            const shaRegex = /sha256:([a-f0-9]{64})/;
-            const shaMatchImageID = shaRegex.exec(status.imageID);
-            const shaMatchImage = shaRegex.exec(status.image);
-
-            if (shaMatchImageID) {
-              imageVersionUsedInCluster = `sha256:${shaMatchImageID[1]}`;
-            } else if (shaMatchImage) {
-              imageVersionUsedInCluster = `sha256:${shaMatchImage[1]}`;
-            } else {
-              const versionTag = status.image.split(':')[1];
-              if (versionTag && !versionTag.startsWith('sha256')) {
-                imageVersionUsedInCluster = versionTag;
-              }
+          if (shaMatchImageID) {
+            imageVersionUsedInCluster = `sha256:${shaMatchImageID[1]}`;
+          } else if (shaMatchImage) {
+            imageVersionUsedInCluster = `sha256:${shaMatchImage[1]}`;
+          } else {
+            const versionTag = status.image.split(':')[1];
+            if (versionTag && !versionTag.startsWith('sha256')) {
+              imageVersionUsedInCluster = versionTag;
             }
+          }
 
-            return {
-              containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
-              imageRepository: imageRepository,
-              imageVersionUsedInCluster: imageVersionUsedInCluster,
-              appName: appName,
-              command: software.command,
-              note: software.note || ''
-            };
+          const eolInfo = await fetchEOLDate(software.name, imageVersionUsedInCluster, software.eolUrl);
+          const newestImageAvailable = await fetchLatestImageTag(software.command);
+
+          containerObjects.push({
+            containerName: pod.metadata.labels?.app || status.name,
+            imageRepository,
+            imageVersionUsedInCluster,
+            newestImageAvailable: newestImageAvailable,
+            eolDate: eolInfo,
+            note: software.note || '',
+            appName: pod.metadata.labels?.app
           });
-      }
-      return [];
+        }
+      });
     });
 
     console.log(containerObjects);
