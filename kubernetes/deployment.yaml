@@ -31,5 +31,5 @@ spec:
         - name: SLACK_WEBHOOK_URL
           valueFrom:
             secretKeyRef:
-              name: slack-webhook-secret
+              name: SLACK_WEBHOOK_URL
               key: webhookUrl
