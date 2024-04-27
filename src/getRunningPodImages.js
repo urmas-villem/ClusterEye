@@ -127,30 +127,28 @@ async function getRunningPodImages() {
                       return status.name === containerNameToMatch;
                   })
                   .map(status => {
-                      let imageRepository = (status.imageID || status.image).split('@')[0].replace('docker-pullable://', '').split(':')[0];
-                      let imageVersionUsedInCluster;
-
-                      const shaRegex = /sha256:([a-f0-9]{64})/;
-                      const imageIdShaMatch = shaRegex.exec(status.imageID);
-                      const imageShaMatch = shaRegex.exec(status.image);
-
-                      if (imageIdShaMatch) {
-                          imageVersionUsedInCluster = `sha256:${imageIdShaMatch[1]}`;
-                      } else if (imageShaMatch) {
-                          imageVersionUsedInCluster = `sha256:${imageShaMatch[1]}`;
-                      } else {
-                          imageVersionUsedInCluster = status.image.includes(':') ? status.image.split(':')[1] : 'latest';
-                      }
-
-                      return {
-                          containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
-                          imageRepository: imageRepository,
-                          imageVersionUsedInCluster: imageVersionUsedInCluster,
-                          appName: appName,
-                          command: software.command,
-                          note: software.note || ''
-                      };
-                  });
+                    let imageRepository = (status.imageID || status.image).split('@')[0].replace('docker-pullable://', '').split(':')[0];
+                    let imageVersionUsedInCluster = 'latest';
+                    const shaRegex = /sha256:([a-f0-9]{64})/;
+                    const imageIdShaMatch = shaRegex.exec(status.imageID);
+                    const imageShaMatch = shaRegex.exec(status.image);
+                    if (imageIdShaMatch) {
+                        imageVersionUsedInCluster = `sha256:${imageIdShaMatch[1]}`;
+                    } else if (imageShaMatch) {
+                        imageVersionUsedInCluster = `sha256:${imageShaMatch[1]}`;
+                    } else if (status.image.includes(':') && !status.image.includes('@sha256')) {
+                        imageVersionUsedInCluster = status.image.split(':')[1];
+                    }
+                
+                    return {
+                        containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
+                        imageRepository: imageRepository,
+                        imageVersionUsedInCluster: imageVersionUsedInCluster,
+                        appName: appName,
+                        command: software.command,
+                        note: software.note || ''
+                    };
+                });
           }
           return [];
       });
