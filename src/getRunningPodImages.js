@@ -121,35 +121,19 @@ async function getRunningPodImages() {
 
       if (software && pod.status.containerStatuses) {
         processedApps.add(appName);
-        return pod.status.containerStatuses.map(status => {
-          const imageID = status.imageID;
-          let imageRepository = '';
-          let imageVersionUsedInCluster = '';
-
-          const shaRegex = /sha256:[a-f0-9]{64}/;
-          const imageIdMatch = imageID.match(shaRegex);
-          if (imageIdMatch) {
-            imageVersionUsedInCluster = imageIdMatch[0];
-            imageRepository = imageID.split('@')[0];
-          } else {
-            imageRepository = (status.image || '').split('@')[0].replace('docker-pullable://', '').split(':')[0];
-            let rawVersion = status.image.split('@sha256:')[1] || status.image.split(':')[1] || 'latest';
-            if (rawVersion.match(shaRegex)) {
-              imageVersionUsedInCluster = `sha256:${rawVersion}`;
-            } else {
-              imageVersionUsedInCluster = rawVersion;
-            }
-          }
-
-          return {
+        return pod.status.containerStatuses
+          .filter(status => {
+            const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
+            return status.name === containerNameToMatch;
+          })
+          .map(status => ({
             containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
-            imageRepository: imageRepository,
-            imageVersionUsedInCluster: imageVersionUsedInCluster,
+            imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
+            imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
             appName: appName,
             command: software.command,
             note: software.note || ''
-          };
-        });
+          }));
       }
       return [];
     });
