@@ -127,15 +127,16 @@ async function getRunningPodImages() {
             return status.name === containerNameToMatch;
           })
           .map(status => {
-            let imageRepository = status.imageID ? status.imageID.replace('docker-pullable://', '').split('@')[0] : status.image.split('@')[0];
+            let imageRepository = (status.imageID || status.image).split('@')[0].replace('docker-pullable://', '');
             let imageVersionUsedInCluster;
-            if (status.imageID && status.imageID.includes('sha256:')) {
+            if (status.image.includes(':') && !status.image.includes('@sha256')) {
+              imageVersionUsedInCluster = status.image.split(':')[1];
+            } else if (status.imageID && status.imageID.includes('@sha256')) {
               imageVersionUsedInCluster = 'sha256:' + status.imageID.split('sha256:')[1];
-            } else if (status.image.includes('@sha256:')) {
-              imageVersionUsedInCluster = 'sha256:' + status.image.split('@sha256:')[1];
+            } else if (status.image.includes('@sha256')) {
+              imageVersionUsedInCluster = 'sha256:' + status.image.split('sha256:')[1];
             } else {
-              const tagIndex = status.image.lastIndexOf(':');
-              imageVersionUsedInCluster = tagIndex > -1 ? status.image.substring(tagIndex + 1) : 'latest';
+              imageVersionUsedInCluster = 'latest';
             }
           
             return {
