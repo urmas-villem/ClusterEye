@@ -114,7 +114,10 @@ async function fetchEOLDate(appName, version, eolUrl) {
 async function preProcess(containerObjects, maxPages = 5) {
   const repositoryMap = {
       'alertmanager': 'alertmanager',
-      'prometheus': 'prometheus'
+      'prometheus': 'prometheus',
+      'blackbox': 'blackbox-exporter',
+      'node-exporter': 'node-exporter',
+      'kafka-exporter': 'kafka-exporter'
       // Additional mappings if necessary
   };
 
@@ -128,8 +131,14 @@ async function preProcess(containerObjects, maxPages = 5) {
               continue;
           }
 
+          // Determine the correct namespace based on the repository
+          let namespace = 'prom';
+          if (containerObj.appName === 'kafka-exporter') {
+              namespace = 'danielqsj';
+          }
+
           for (let page = 1; page <= maxPages; page++) {
-              const curlCommand = `curl -s "https://hub.docker.com/v2/namespaces/prom/repositories/${repository}/tags?page=${page}" | jq -r '.results[] | select(.images[].digest == "${sha}" and .name != "latest").name'`;
+              const curlCommand = `curl -s "https://hub.docker.com/v2/namespaces/${namespace}/repositories/${repository}/tags?page=${page}" | jq -r '.results[] | select(.images[].digest == "${sha}" and .name != "latest").name'`;
               try {
                   const { stdout, stderr } = await exec(curlCommand);
                   if (stderr) {
@@ -138,7 +147,7 @@ async function preProcess(containerObjects, maxPages = 5) {
                   }
                   if (stdout.trim()) {
                       containerObj.imageVersionUsedInCluster = stdout.trim();
-                      break; 
+                      break;
                   }
               } catch (error) {
                   console.error('Error executing curl command:', error);
