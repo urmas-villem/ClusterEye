@@ -58,21 +58,24 @@ async function sendSlackNotification() {
     };
 
     const accountNumberRegex = /(\d+)\.dkr\.ecr\..*\.amazonaws\.com/;
-    const updatesByEnvironment = {};
+    let globalEnv = 'unknown environment'; 
 
-    // Aggregate updates by environment
     for (const item of cache) {
         const match = item.imageRepository.match(accountNumberRegex);
-        let env = 'unknown environment';
         if (match && match[1] && environmentMapping[match[1]]) {
-            env = environmentMapping[match[1]];
+            globalEnv = environmentMapping[match[1]];
+            break;
         }
+    }
 
+    const updatesByEnvironment = {};
+
+    for (const item of cache) {
         if (item.sendToSlack) {
-            if (!updatesByEnvironment[env]) {
-                updatesByEnvironment[env] = [];
+            if (!updatesByEnvironment[globalEnv]) {
+                updatesByEnvironment[globalEnv] = [];
             }
-            updatesByEnvironment[env].push({
+            updatesByEnvironment[globalEnv].push({
                 containerName: item.containerName,
                 versionUsed: item.imageVersionUsedInCluster,
                 newestVersion: item.newestImageAvailable
@@ -80,7 +83,6 @@ async function sendSlackNotification() {
         }
     }
 
-    // Send a single notification for each environment
     for (const [env, updates] of Object.entries(updatesByEnvironment)) {
         const blocks = updates.map(update => ({
             type: "section",
