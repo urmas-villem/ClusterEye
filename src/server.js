@@ -58,68 +58,73 @@ async function sendSlackNotification() {
     };
 
     const accountNumberRegex = /(\d+)\.dkr\.ecr\..*\.amazonaws\.com/;
-    let env = 'unknown environment';
+    const updatesByEnvironment = {};
 
-    // Determine environment
+    // Aggregate updates by environment
     for (const item of cache) {
         const match = item.imageRepository.match(accountNumberRegex);
+        let env = 'unknown environment';
         if (match && match[1] && environmentMapping[match[1]]) {
             env = environmentMapping[match[1]];
-            break; // Break after first match
+        }
+
+        if (item.sendToSlack) {
+            if (!updatesByEnvironment[env]) {
+                updatesByEnvironment[env] = [];
+            }
+            updatesByEnvironment[env].push({
+                containerName: item.containerName,
+                versionUsed: item.imageVersionUsedInCluster,
+                newestVersion: item.newestImageAvailable
+            });
         }
     }
 
-    // Send notifications to environment
-    for (const item of cache) {
-        if (item.sendToSlack) {
-            //apply formating
-            const currentTimestamp = Math.floor(Date.now() / 1000);
-            const payload = {
-                attachments: [
-                    {
-                        color: "#f2c744",
-                        blocks: [
-                            {
-                                type: "section",
-                                text: {
-                                    type: "mrkdwn",
-                                    text: `*${item.containerName} for* \`${env}\` *can be upgraded to a newer version*`
-                                }
-                            },
-                            {
-                                type: "context",
-                                elements: [
-                                    {
-                                        type: "mrkdwn",
-                                        text: `Version used: \`${item.imageVersionUsedInCluster}\` newest image: \`${item.newestImageAvailable}\``
-                                    }
-                                ]
-                            },
-                            {
-                                type: "context",
-                                elements: [
-                                    {
-                                        type: "mrkdwn",
-                                        text: `_<!date^${currentTimestamp}^{date} {time}|{date} {time}>_`
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            };
-
-            try {
-                await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload)
-                });
-            } catch (error) {
-                console.error(`Error sending Slack notification for ${item.containerName}:`, error);
+    // Send a single notification for each environment
+    for (const [env, updates] of Object.entries(updatesByEnvironment)) {
+        const blocks = updates.map(update => ({
+            type: "section",
+            text: {
+                type: "mrkdwn",
+                text: `*${update.containerName}* Version used: \`${update.versionUsed}\`, newest image: \`${update.newestVersion}\``
             }
+        }));
+
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        blocks.push({
+            type: "context",
+            elements: [{
+                type: "mrkdwn",
+                text: `_<!date^${currentTimestamp}^{date} {time}|{date} {time}>_`
+            }]
+        });
+
+        const payload = {
+            attachments: [{
+                color: "#f2c744",
+                blocks: [
+                    {
+                        type: "section",
+                        text: {
+                            type: "mrkdwn",
+                            text: `*${env} has images that can be upgraded:*`
+                        }
+                    },
+                    ...blocks
+                ]
+            }]
+        };
+
+        try {
+            await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+        } catch (error) {
+            console.error(`Error sending Slack notification for environment ${env}:`, error);
         }
     }
 }
