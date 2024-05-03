@@ -60,6 +60,7 @@ async function sendSlackNotification() {
     const accountNumberRegex = /(\d+)\.dkr\.ecr\..*\.amazonaws\.com/;
     const updatesByEnvironment = {};
 
+    // Aggregate updates by environment
     for (const item of cache) {
         const match = item.imageRepository.match(accountNumberRegex);
         let env = 'unknown environment';
@@ -79,10 +80,25 @@ async function sendSlackNotification() {
         }
     }
 
+    // Send a single notification for each environment
     for (const [env, updates] of Object.entries(updatesByEnvironment)) {
-        const formattedUpdates = updates.map(update => `*${update.containerName}* Version used: \`${update.versionUsed}\`, newest image: \`${update.newestVersion}\``).join('\n');
+        const blocks = updates.map(update => ({
+            type: "section",
+            text: {
+                type: "mrkdwn",
+                text: `*${update.containerName}* Version used: \`${update.versionUsed}\`, newest image: \`${update.newestVersion}\``
+            }
+        }));
 
         const currentTimestamp = Math.floor(Date.now() / 1000);
+        blocks.push({
+            type: "context",
+            elements: [{
+                type: "mrkdwn",
+                text: `_<!date^${currentTimestamp}^{date} {time}|{date} {time}>_`
+            }]
+        });
+
         const payload = {
             attachments: [{
                 color: "#f2c744",
@@ -91,23 +107,10 @@ async function sendSlackNotification() {
                         type: "section",
                         text: {
                             type: "mrkdwn",
-                            text: `*${env} has images that can be upgraded:*`
+                            text: `*\`${env}\` has images that can be upgraded:*`
                         }
                     },
-                    {
-                        type: "section",
-                        text: {
-                            type: "mrkdwn",
-                            text: formattedUpdates
-                        }
-                    },
-                    {
-                        type: "context",
-                        elements: [{
-                            type: "mrkdwn",
-                            text: `_<!date^${currentTimestamp}^{date} {time}|{date} {time}>_`
-                        }]
-                    }
+                    ...blocks
                 ]
             }]
         };
