@@ -92,6 +92,10 @@ body.dark-mode th, body.dark-mode td {
     background-color: rgb(33, 33, 33);
 }
 
+body.dark-mode tr:hover th, body.dark-mode tr:hover td {
+    background-color: rgb(73, 73, 73);
+}
+
 body.dark-mode .header-container {
     background-color: rgb(73, 73, 73);
     color: #ddd;
