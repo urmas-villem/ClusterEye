@@ -88,21 +88,17 @@ body.dark-mode {
     color: white;
 }
 
-.header-container.dark-mode {
-    background-color: #222;
-    color: #ddd;
-}
-
-table.dark-mode {
+.dark-mode table {
     background-color: rgb(23, 23, 23);
 }
 
-th.dark-mode, td.dark-mode, tr.dark-mode:hover {
+.dark-mode th, .dark-mode td, .dark-mode tr:hover {
     background-color: rgb(33, 33, 33);
 }
 
-.header-container.dark-mode {
-    background-color: rgb(23, 23, 23); /* Dark mode background for header */
+.dark-mode .header-container {
+    background-color: rgb(23, 23, 23);
+    color: #ddd;
 }
 
 a.dark-mode {
@@ -138,14 +134,14 @@ a.dark-mode {
     transform: translateY(-50%);
 }
 
-body.dark-mode .sun {
-    fill: rgb(33, 33, 33);
-}
-
 .moon {
     top: 49%;
     right: 3%;
     transform: translateY(-50%);
+}
+
+body.dark-mode .sun {
+    fill: rgb(33, 33, 33);
 }
 
 body.dark-mode .moon {

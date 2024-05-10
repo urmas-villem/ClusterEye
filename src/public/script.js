@@ -66,7 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateTheme = () => {
         const isDarkMode = themeToggle.checked;
-        body.classList.toggle('dark-mode', isDarkMode);
+        document.body.classList.toggle('dark-mode', isDarkMode);
+        document.querySelectorAll('table, th, td').forEach(elem => {
+            elem.classList.toggle('dark-mode', isDarkMode);
+        });
         localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     };
 
