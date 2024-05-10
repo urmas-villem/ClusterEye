@@ -25,7 +25,6 @@ tr:hover {
 .header-container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     background-color: #f0f0f0;
     padding: 10px;
     margin-bottom: 20px;
@@ -33,15 +32,8 @@ tr:hover {
     border-radius: 5px;
 }
 
-.text-container {
-    flex-grow: 1;
-}
-
-.toggle-container {
-    text-align: right;
-}
-
 .favicon-container {
+    display: flex;
     align-items: center;
 }
 

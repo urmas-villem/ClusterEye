@@ -76,5 +76,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
     }
 });
 
+
 // Initial fetch and display
 fetchAndDisplayPodImages();
