@@ -90,6 +90,10 @@ tr:hover {
     margin-left: 20px;
 }
 
+p {
+    margin: 0;
+    padding: 5px 0;
+}
 
 /* Dark mode */
 body.dark-mode {
