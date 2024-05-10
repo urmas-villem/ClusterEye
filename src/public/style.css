@@ -84,20 +84,20 @@ tr:hover {
 }
 
 body.dark-mode {
-    background-color: rgb(33, 33, 33);
+    background-color: rgb(23, 23, 23);
     color: white;
 }
 
-.dark-mode table {
-    background-color: rgb(23, 23, 23);
+.dark-mode tr:hover {
+    background-color: (33, 33, 33);
 }
 
-.dark-mode th, .dark-mode td, .dark-mode tr:hover {
+.dark-mode th, .dark-mode td {
     background-color: rgb(33, 33, 33);
 }
 
 .dark-mode .header-container {
-    background-color: rgb(23, 23, 23);
+    background-color: rgb(33, 33, 33);
     color: #ddd;
 }
 
@@ -141,7 +141,7 @@ a.dark-mode {
 }
 
 body.dark-mode .sun {
-    fill: rgb(33, 33, 33);
+    fill: #d8860b;
 }
 
 body.dark-mode .moon {
@@ -153,7 +153,7 @@ body:not(.dark-mode) .sun {
 }
 
 body:not(.dark-mode) .moon {
-    fill: rgb(33, 33, 33);
+    fill: rgb(43, 43, 43);
 }
 
 #theme-toggle + label::after {
