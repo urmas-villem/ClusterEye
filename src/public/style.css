@@ -7,6 +7,11 @@ h1 {
     color: navy;
 }
 
+p {
+    margin: 0;
+    padding: 5px 0;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -90,11 +95,6 @@ tr:hover {
     margin-left: 20px;
 }
 
-p {
-    margin: 0;
-    padding: 5px 0;
-}
-
 /* Dark mode */
 body.dark-mode {
     background-color: #333;
@@ -121,8 +121,8 @@ body.dark-mode a {
 /*Button stuff*/
 
 .switch {
-    display: inline-block;
     position: relative;
+    display: inline-block;
     width: 60px;
     height: 34px;
 }
@@ -131,11 +131,6 @@ body.dark-mode a {
     opacity: 0;
     width: 0;
     height: 0;
-}
-
-.switch-container {
-    display: flex;
-    align-items: center;
 }
 
 .slider {
@@ -147,6 +142,7 @@ body.dark-mode a {
     bottom: 0;
     background-color: #ccc;
     transition: .4s;
+    border-radius: 34px;
 }
 
 .slider:before {
@@ -158,10 +154,11 @@ body.dark-mode a {
     bottom: 4px;
     background-color: white;
     transition: .4s;
+    border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: #00ff00;
+    background-color: #333;
 }
 
 input:focus + .slider {
@@ -170,12 +167,4 @@ input:focus + .slider {
 
 input:checked + .slider:before {
     transform: translateX(26px);
-}
-
-.slider.round {
-    border-radius: 34px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
 }
