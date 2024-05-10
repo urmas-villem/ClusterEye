@@ -84,7 +84,7 @@ tr:hover {
 }
 
 body.dark-mode {
-    background-color: #333;
+    background-color: rgb(33, 33, 33);
     color: white;
 }
 
@@ -93,9 +93,16 @@ body.dark-mode {
     color: #ddd;
 }
 
-table.dark-mode, th.dark-mode, td.dark-mode {
-    background-color: #454545;
-    color: #fff;
+table.dark-mode {
+    background-color: rgb(23, 23, 23);
+}
+
+th.dark-mode, td.dark-mode, tr.dark-mode:hover {
+    background-color: rgb(33, 33, 33);
+}
+
+.header-container.dark-mode {
+    background-color: rgb(23, 23, 23); /* Dark mode background for header */
 }
 
 a.dark-mode {
@@ -129,14 +136,28 @@ a.dark-mode {
     top: 49%;
     left: 2%;
     transform: translateY(-50%);
-    fill: white
+}
+
+body.dark-mode .sun {
+    fill: rgb(33, 33, 33);
 }
 
 .moon {
     top: 49%;
     right: 3%;
     transform: translateY(-50%);
-    fill: white
+}
+
+body.dark-mode .moon {
+    fill: white;
+}
+
+body:not(.dark-mode) .sun {
+    fill: white;
+}
+
+body:not(.dark-mode) .moon {
+    fill: rgb(33, 33, 33);
 }
 
 #theme-toggle + label::after {
