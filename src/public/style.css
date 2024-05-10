@@ -114,12 +114,18 @@ body.dark-mode a {
     display: inline-block;
     width: 60px;
     height: 34px;
+    margin-left: 20px;
 }
 
 .switch input {
     opacity: 0;
     width: 0;
     height: 0;
+}
+
+.switch-container {
+    display: flex;
+    align-items: center;
 }
 
 .slider {
@@ -166,4 +172,12 @@ input:checked + .slider:before {
 
 .slider.round:before {
     border-radius: 50%;
+}
+
+.status-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin: 20px 0;
 }
