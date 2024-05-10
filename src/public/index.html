@@ -15,7 +15,9 @@
         <h1>ClusterEye</h1>
     </div>
     <div class="info-and-toggle">
-        <p>Checks images used by pods inside cluster and compares them with the newest versions. Notifies if necessary</p>
+        <p class="big">Checks images used by pods inside cluster and compares them with the newest versions. Notifies if necessary<br>
+        Software gets checked every 5 minutes or when pressing the <i style="text-decoration: underline;">poll now</i> button below<br>
+        EOL (end of life) dates provided by <a href="https://endoflife.date/" target="_blank">endoflife.date</a></p>
         <div class="toggle-container">
             <input type="checkbox" id="theme-toggle"/>
             <label for="theme-toggle">
@@ -28,11 +30,7 @@
             </label>
         </div>
     </div>
-    <p>Software gets checked every 5 minutes or when pressing the <i style="text-decoration: underline;">poll now</i> button below</p>
-    <p>EOL (end of life) dates provided by <a href="https://endoflife.date/" target="_blank">endoflife.date</a></p>
 
-
-    
     <div id="loadingMessage">Loading pod images...</div>
 
     <div id="podImagesContainer"></div>
