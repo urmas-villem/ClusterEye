@@ -67,11 +67,12 @@ function toggleDarkMode() {
     localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
 }
 
-document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
 
 window.addEventListener('DOMContentLoaded', (event) => {
     if (localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle').checked = true;
     }
 });
 
