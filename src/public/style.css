@@ -26,8 +26,11 @@ tr:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background-color: #f0f0f0;
     padding: 10px;
     margin-bottom: 20px;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
 }
 
 .text-container {
@@ -39,7 +42,6 @@ tr:hover {
 }
 
 .favicon-container {
-    display: flex;
     align-items: center;
 }
 
