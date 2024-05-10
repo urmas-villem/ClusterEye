@@ -38,8 +38,7 @@ tr:hover {
     display: flex;
     align-items: center;
     background-color: #faf6f0;
-    padding: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     border: 1px solid #d3d3d3;
     border-radius: 5px;
 }
@@ -50,9 +49,9 @@ tr:hover {
 }
 
 .favicon {
-    height: auto;
     width: 55px;
     margin-right: 23px;
+    margin-left: 10px;
     object-fit: contain;
     cursor: pointer;
 }
@@ -67,10 +66,6 @@ tr:hover {
 
 .date-valid {
     color: green;
-}
-
-.no-wrap {
-    white-space: nowrap;
 }
 
 .last-updated {
