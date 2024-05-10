@@ -97,7 +97,7 @@ body.dark-mode {
 }
 
 .dark-mode .header-container {
-    background-color: rgb(33, 33, 33);
+    background-color: rgb(53, 53, 53);
     color: #ddd;
 }
 
@@ -141,7 +141,7 @@ a.dark-mode {
 }
 
 body.dark-mode .sun {
-    fill: #d8860b;
+    fill: #e3f309;
 }
 
 body.dark-mode .moon {
