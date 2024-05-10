@@ -92,7 +92,15 @@ body.dark-mode table tr:hover {
     background-color: rgb(73, 73, 73);
 }
 
+body.dark-mode table tr {
+    background-color: rgb(33, 33, 33);
+}
+
 body.dark-mode th, body.dark-mode td {
+    background-color: rgb(33, 33, 33);
+}
+
+body.dark-mode table th, body.dark-mode table td {
     background-color: rgb(33, 33, 33);
 }
 
