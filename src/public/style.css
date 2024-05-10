@@ -75,8 +75,10 @@ tr:hover {
     background-color: rgb(2, 123, 255);
     padding: 7px;
     margin-bottom: 20px;
+    border: 1px solid rgb(2, 123, 255);
     border-radius: 5px;
     cursor: pointer;
+    color: white;
 }
 
 #pollButton:hover {
