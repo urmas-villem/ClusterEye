@@ -14,44 +14,14 @@
         <img src="https://raw.githubusercontent.com/urmas-villem/ClusterEye/main/src/public/favicon-big.png" alt="favicon" class="favicon" id="reloadButton">
         <h1>ClusterEye</h1>
     </div>
-    <div class="status-line">
-        <p>Checks images used by pods inside cluster and compares them with the newest versions. Notifies if necessary</p>
-        <label class="switch" for="darkModeToggle">
-            <input type="checkbox" id="darkModeToggle">
-            <span class="slider round"></span>
-        </label>
-    </div>
-    <div class="check-line">
-        <p>Software gets checked every 5 minutes or when pressing the <i style="text-decoration: underline;">poll now</i> button below</p>
-        <span id="toggleLabel">Toggle Dark Mode</span>
-    </div>
+    <p>Checks images used by pods inside cluster and compares them with the newest versions. Notifies if necessary</p>
+    <p>Software gets checked every 5 minutes or when pressing the <i style="text-decoration: underline;">poll now</i> button below</p>
     <p>EOL (end of life) dates provided by <a href="https://endoflife.date/" target="_blank">endoflife.date</a></p>
 
-    <!-- Theme Toggle Button -->
-    <input type="checkbox" id="theme-toggle"/>
-    <label for="theme-toggle">
-        <!-- Sun Icon -->
-        <svg width="100px" height="100px" class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="6" fill="currentColor" />
-            <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2"/>
-            <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2"/>
-            <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/>
-            <line x1="21" y1="12" x2="24" y2="12" stroke="currentColor" stroke-width="2"/>
-            <line x1="4" y1="4" x2="7" y2="7" stroke="currentColor" stroke-width="2"/>
-            <line x1="17" y1="17" x2="20" y2="20" stroke="currentColor" stroke-width="2"/>
-            <line x1="4" y1="20" x2="7" y2="17" stroke="currentColor" stroke-width="2"/>
-            <line x1="17" y1="7" x2="20" y2="4" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        <!-- Moon Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" class="moon" viewBox="0 0 24 24">
-            <path d="M12 2a10 10 0 0 1 7.07 17.07c-3.9 3.9-10.24 3.9-14.14 0-3.9-3.9-3.9-10.24 0-14.14A9.97 9.97 0 0 1 12 2zm0-2C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm0 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z" fill="currentColor"/>
-        </svg>
-    </label>
-
-    <div class="background"></div>
-
     <div id="loadingMessage">Loading pod images...</div>
+
     <div id="podImagesContainer"></div>
+
     <div id="lastUpdated" class="last-updated"></div>
     <div id="nextPoll"></div>
     <button id="pollButton">Poll Now</button>
@@ -61,5 +31,6 @@
             location.reload();
         });
     </script>
+
 </body>
 </html>
