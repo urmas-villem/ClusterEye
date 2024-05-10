@@ -61,21 +61,22 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
 }
 
 // Dark mode toggle
-function toggleDarkMode() {
+document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('darkModeToggle');
+    const label = document.getElementById('toggleLabel');
     const body = document.body;
-    body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
-}
 
-document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
+    const updateMode = () => {
+        const isDarkMode = body.classList.toggle('dark-mode', toggle.checked);
+        label.textContent = isDarkMode ? 'Toggle Light Mode' : 'Toggle Dark Mode';
+        localStorage.setItem('darkMode', isDarkMode);
+    };
 
-window.addEventListener('DOMContentLoaded', (event) => {
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('darkModeToggle').checked = true;
-    }
+    toggle.checked = localStorage.getItem('darkMode') === 'true';
+    updateMode();
+
+    toggle.addEventListener('change', updateMode);
 });
-
 
 // Initial fetch and display
 fetchAndDisplayPodImages();
