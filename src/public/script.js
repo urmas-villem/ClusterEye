@@ -59,24 +59,3 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
         document.getElementById('loadingMessage').innerText = 'Failed to load pod images.';
     }
 }
-
-// Dark mode toggle
-document.addEventListener('DOMContentLoaded', () => {
-    const toggle = document.getElementById('darkModeToggle');
-    const label = document.getElementById('toggleLabel');
-    const body = document.body;
-
-    const updateMode = () => {
-        const isDarkMode = body.classList.toggle('dark-mode', toggle.checked);
-        label.textContent = isDarkMode ? 'Toggle Light Mode' : 'Toggle Dark Mode';
-        localStorage.setItem('darkMode', isDarkMode);
-    };
-
-    toggle.checked = localStorage.getItem('darkMode') === 'true';
-    updateMode();
-
-    toggle.addEventListener('change', updateMode);
-});
-
-// Initial fetch and display
-fetchAndDisplayPodImages();
