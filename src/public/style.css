@@ -88,7 +88,7 @@ body.dark-mode {
     color: white;
 }
 
-body.dark-mode tr:hover {
+body.dark-mode table tr:hover {
     background-color: rgb(73, 73, 73);
 }
 
