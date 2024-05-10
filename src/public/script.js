@@ -59,3 +59,22 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
         document.getElementById('loadingMessage').innerText = 'Failed to load pod images.';
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    const updateTheme = () => {
+        const isDarkMode = themeToggle.checked;
+        body.classList.toggle('dark-mode', isDarkMode);
+        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    };
+
+    themeToggle.checked = localStorage.getItem('theme') === 'dark';
+    updateTheme();
+
+    themeToggle.addEventListener('change', updateTheme);
+});
+
+// Initial fetch and display
+fetchAndDisplayPodImages();
