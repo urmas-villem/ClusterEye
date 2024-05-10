@@ -82,3 +82,27 @@ tr:hover {
 #pollButton:hover {
     background-color: #f5f5f5;
 }
+
+
+/* Dark mode styles */
+body.dark-mode {
+    background-color: #333;
+    color: #ddd;
+}
+
+body.dark-mode .header-container {
+    background-color: #222;
+}
+
+body.dark-mode table {
+    border-color: #555;
+}
+
+body.dark-mode td, body.dark-mode th {
+    border-color: #555;
+    color: #ddd;
+}
+
+body.dark-mode a {
+    color: #4da6ff;
+}

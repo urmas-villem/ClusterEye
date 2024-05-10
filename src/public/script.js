@@ -60,5 +60,20 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
     }
 }
 
+// Dark mode toggle
+function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+}
+
+document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+
+window.addEventListener('DOMContentLoaded', (event) => {
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
+});
+
 // Initial fetch and display
 fetchAndDisplayPodImages();
