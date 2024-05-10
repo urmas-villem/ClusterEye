@@ -109,9 +109,9 @@ body.dark-mode a {
 
 .switch {
     display: inline-block;
+    position: relative;
     width: 60px;
     height: 34px;
-    margin-left: auto;
 }
 
 .switch input {
@@ -126,18 +126,22 @@ body.dark-mode a {
 }
 
 .slider {
+    position: absolute;
     cursor: pointer;
-    position: relative;
-    background-color: #f44336;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
     transition: .4s;
 }
 
 .slider:before {
-    position: relative;
+    position: absolute;
     content: "";
     height: 26px;
     width: 26px;
-    left: 4px; 
+    left: 4px;
     bottom: 4px;
     background-color: white;
     transition: .4s;
