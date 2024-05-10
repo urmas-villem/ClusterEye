@@ -88,21 +88,17 @@ body.dark-mode {
     color: white;
 }
 
-.dark-mode tr:hover {
-    background-color: (73, 73, 73);
+body.dark-mode tr:hover {
+    background-color: rgb(73, 73, 73);
 }
 
-.dark-mode th, .dark-mode td {
+body.dark-mode th, body.dark-mode td {
     background-color: rgb(33, 33, 33);
 }
 
-.dark-mode .header-container {
+body.dark-mode .header-container {
     background-color: rgb(73, 73, 73);
     color: #ddd;
-}
-
-a.dark-mode {
-    color: #4faaff;
 }
 
 .toggle-container {

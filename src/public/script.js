@@ -62,20 +62,13 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
-    const body = document.body;
-
     const updateTheme = () => {
-        const isDarkMode = themeToggle.checked;
-        document.body.classList.toggle('dark-mode', isDarkMode);
-        document.querySelectorAll('table, th, td').forEach(elem => {
-            elem.classList.toggle('dark-mode', isDarkMode);
-        });
-        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        document.body.classList.toggle('dark-mode', themeToggle.checked);
+        localStorage.setItem('theme', themeToggle.checked ? 'dark' : 'light');
     };
 
     themeToggle.checked = localStorage.getItem('theme') === 'dark';
     updateTheme();
-
     themeToggle.addEventListener('change', updateTheme);
 });
 
