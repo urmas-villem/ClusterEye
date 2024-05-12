@@ -228,57 +228,61 @@ body:not(.dark-mode) .moon {
     height: 100%;
     overflow: auto;
     background-color: rgba(0,0,0,0.4);
-  }
+}
   
-  .modal-content {
+.modal-content {
     background-color: #fefefe;
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
-  }
+}
   
-  .close {
+.close {
     color: #aaaaaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
-  }
+}
   
-  .close:hover,
-  .close:focus {
+.close:hover,
+.close:focus {
     color: #000;
     text-decoration: none;
     cursor: pointer;
-  }
+}
 
-  body.dark-mode .modal-content {
+body.dark-mode .modal-content {
     background-color: #333;
     color: #ccc;
     border-color: #555; 
-  }
+}
   
-  body.dark-mode .close {
+body.dark-mode .close {
     color: #ccc; 
-  }
+}
   
-  body.dark-mode .close:hover,
-  body.dark-mode .close:focus {
+body.dark-mode .close:hover,
+body.dark-mode .close:focus {
     color: #f9f9f9;
-  }
+}
 
-  .alert {
+
+.alert {
     padding: 20px;
-    background-color: #ffcc00; 
+    background-color: rgb(255, 169, 43);
     color: rgb(255, 255, 255); 
     position: fixed;
-    bottom: 0; 
+    bottom: 0;
+    left: 0;
     width: 100%; 
+    box-sizing: border-box;
+    border-radius: 5px; 
     box-shadow: 0px -5px 10px rgba(0,0,0,0.1); 
     z-index: 1000;
-  }
+}
   
-  .closebtn {
+.closebtn {
     margin-left: 15px;
     color: rgb(255, 255, 255);
     font-weight: bold;
@@ -287,8 +291,8 @@ body:not(.dark-mode) .moon {
     line-height: 20px;
     cursor: pointer;
     transition: 0.3s;
-  }
+}
   
-  .closebtn:hover {
+.closebtn:hover {
     color: rgb(255, 255, 255);
-  }
+}
