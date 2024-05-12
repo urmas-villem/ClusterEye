@@ -131,6 +131,16 @@ async function sendSlackNotification() {
     }
 }
 
+app.get('/api/missing-apps', async (req, res) => {
+    try {
+      const { missingApps } = await getRunningPodImages();
+      res.json({ missingApps });
+    } catch (error) {
+      console.error('Error fetching missing apps:', error);
+      res.status(500).send('Error fetching missing apps');
+    }
+  });
+
 // Endpoint to trigger cache and Prometheus metrics updates
 app.post('/trigger-update', async (req, res) => {
     await updateCache();

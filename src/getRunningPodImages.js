@@ -10,7 +10,12 @@ async function fetchSoftwareConfig() {
   try {
     const configMap = await coreV1Api.readNamespacedConfigMap('clustereye-config', 'default');
     const softwareConfig = configMap.body.data;
-    return Object.entries(softwareConfig).map(([key, value]) => ({ name: key, ...JSON.parse(value) }));
+    let expectedApps = new Set();
+    const configObjects = Object.entries(softwareConfig).map(([key, value]) => {
+      expectedApps.add(key);
+      return { name: key, ...JSON.parse(value) };
+    });
+    return { configObjects, expectedApps };
   } catch (error) {
     console.error('Error fetching software config:', error);
     throw error;
@@ -159,18 +164,18 @@ async function preProcess(containerObjects, maxPages = 5) {
 
 async function getRunningPodImages() {
   try {
-    const softwares = await fetchSoftwareConfig();
+    const { configObjects, expectedApps } = await fetchSoftwareConfig();
     const res = await coreV1Api.listPodForAllNamespaces();
     const processedApps = new Set();
     const containerObjects = res.body.items.flatMap(pod => {
       const appName = pod.metadata.labels?.app;
-      if (processedApps.has(appName)) {
+      if (!expectedApps.has(appName)) {
         return [];
       }
-      const software = softwares.find(s => s.name === appName);
+      processedApps.add(appName);
+      const software = configObjects.find(s => s.name === appName);
 
       if (software && pod.status.containerStatuses) {
-        processedApps.add(appName);
         return pod.status.containerStatuses
           .filter(status => {
             const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
@@ -190,11 +195,13 @@ async function getRunningPodImages() {
 
     await preProcess(containerObjects);
 
+    const missingApps = [...expectedApps].filter(app => !processedApps.has(app));
+
     for (const containerObj of containerObjects) {
       if (containerObj.command) {
         containerObj.newestImageAvailable = await fetchLatestImageTag(containerObj.command);
       }
-      const softwareConfig = softwares.find(s => s.name === containerObj.appName);
+      const softwareConfig = configObjects.find(s => s.name === containerObj.appName);
 
       if (softwareConfig && softwareConfig.eolUrl) {
         containerObj.eolDate = await fetchEOLDate(containerObj.appName, containerObj.imageVersionUsedInCluster, softwareConfig.eolUrl);
@@ -207,11 +214,10 @@ async function getRunningPodImages() {
       containerObj.sendToSlack = isVersionMismatch && eolPassed;
     }
 
-    console.log(containerObjects);
-    return containerObjects;
+    return { containerObjects, missingApps };
   } catch (error) {
     console.error('Error:', error);
-    return [];
+    return { containerObjects: [], missingApps: [] };
   }
 }
 

@@ -72,5 +72,36 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggle.addEventListener('change', updateTheme);
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    var modal = document.getElementById("missingAppsModal");
+    var btn = document.getElementById("missingAppsBtn");
+    var span = document.getElementsByClassName("close")[0];
+  
+    btn.onclick = function() {
+      fetch('/api/missing-apps')
+        .then(response => response.json())
+        .then(data => {
+          const missingAppsList = document.getElementById('missingAppsList');
+          if (data.missingApps && data.missingApps.length > 0) {
+            missingAppsList.textContent = data.missingApps.join(', ');
+          } else {
+            missingAppsList.textContent = 'No missing applications.';
+          }
+          modal.style.display = "block";
+        })
+        .catch(error => console.error('Error loading missing apps:', error));
+    }
+  
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+  
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  });
+
 // Initial fetch and display
 fetchAndDisplayPodImages();
