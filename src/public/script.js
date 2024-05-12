@@ -16,8 +16,8 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
         table += '<th>Container name</th>';
         table += '<th>Image repository</th>';
         table += '<th>Image version used in cluster</th>';
-        table += '<th>EOL of used version</th>';
         table += '<th>Newest image available</th>';
+        table += '<th>EOL of used version</th>';
         table += '<th>Notes</th>';
         table += '</tr>';
 
@@ -40,8 +40,8 @@ export async function fetchAndDisplayPodImages(resetTimer = true) {
                         <td>${item.containerName}</td>
                         <td>${item.imageRepository}</td>
                         <td class="${versionCellClass}">${item.imageVersionUsedInCluster}</td>
-                        <td class="${eolDateClass}">${formattedEolDate} ${timeDiffMessage}</td>
                         <td>${item.newestImageAvailable}</td>
+                        <td class="${eolDateClass}">${formattedEolDate} ${timeDiffMessage}</td>
                         <td>${item.note}</td>
                       </tr>`;
         });
