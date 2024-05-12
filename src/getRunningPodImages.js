@@ -54,17 +54,24 @@ function eolDays(eolDate) {
 
 async function fetchLatestImageTag(commandArray) {
   const networkErrorMessage = 'Network error occurred with getting latest version, try again in a few minutes';
-  try {
-    const command = commandArray.join(' ');
 
+  const command = commandArray.join(' ');
+  console.log(`Executing command: ${command}`);
+
+  try {
     const { stdout, stderr } = await exec(command);
+    
     if (stderr || !stdout || stdout.trim() === 'null') {
       console.error(`Error in command execution: ${stderr}`);
+      console.log(`Standard output received: ${stdout}`);
       return networkErrorMessage;
     }
+    
+    console.log(`Command executed successfully. Output: ${stdout.trim()}`);
     return stdout.trim();
   } catch (error) {
-    console.error('Error fetching latest tag:', error.message);
+    console.error(`Error fetching latest tag: ${error.message}`);
+    console.error(`Full error stack: ${error.stack}`);
     return networkErrorMessage;
   }
 }
