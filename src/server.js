@@ -46,6 +46,9 @@ async function updateCache() {
 }
 
 function updateMetricsFromCache() {
+    // remove the previous data
+    containerInfoGauge.reset();
+
     if (cache) {
         cache.forEach(pod => {
             containerInfoGauge.labels(pod.containerName, pod.imageRepository, pod.imageVersionUsedInCluster, pod.newestImageAvailable).set(1);
