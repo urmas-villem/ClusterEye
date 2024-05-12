@@ -136,7 +136,7 @@ async function sendSlackNotification() {
 
 // Endpoint for missing apps
 app.get('/api/missing-apps', (req, res) => {
-    res.json({ missingApps: missingAppsCache });
+    res.json({ missingApps: cacheModal });
 });
 
 // Endpoint to trigger cache and Prometheus metrics updates
