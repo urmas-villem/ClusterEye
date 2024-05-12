@@ -18,25 +18,31 @@
         <p class="big">Checks images used by pods inside cluster and compares them with the newest versions. Notifies if necessary<br>
         Software gets checked every 60 minutes or when pressing the <i style="text-decoration: underline;">poll now</i> button below<br>
         EOL (end of life) dates provided by <a href="https://endoflife.date/" target="_blank">endoflife.date</a></p>
-        <div class="toggle-container">
-            <input type="checkbox" id="theme-toggle"/>
-            <label for="theme-toggle">
-                <svg class="sun" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M128 64a64 64 0 1 0 64 64 64.07 64.07 0 0 0-64-64m0 120a56 56 0 1 1 56-56 56.064 56.064 0 0 1-56 56m-4-148V16a4 4 0 0 1 8 0v20a4 4 0 0 1-8 0M45.976 51.632a4 4 0 0 1 5.657-5.656l14.142 14.142a4 4 0 1 1-5.657 5.656ZM40 128a4 4 0 0 1-4 4H16a4 4 0 0 1 0-8h20a4 4 0 0 1 4 4m25.775 62.226a4 4 0 0 1 0 5.656l-14.142 14.142a4 4 0 1 1-5.657-5.656l14.142-14.142a4 4 0 0 1 5.657 0M132 220v20a4 4 0 0 1-8 0v-20a4 4 0 0 1 8 0m78.024-15.632a4 4 0 1 1-5.657 5.656l-14.142-14.142a4 4 0 0 1 5.657-5.656ZM244 128a4 4 0 0 1-4 4h-20a4 4 0 0 1 0-8h20a4 4 0 0 1 4 4m-33.976-82.024a4 4 0 0 1 0 5.656l-14.142 14.142a4 4 0 0 1-5.657-5.656l14.142-14.142a4 4 0 0 1 5.657 0"/>
+        <div class="control-container">
+            <div class="toggle-container">
+                <input type="checkbox" id="theme-toggle"/>
+                <label for="theme-toggle">
+                    <svg class="sun" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M128 64a64 64 0 1 0 64 64 64.07 64.07 0 0 0-64-64m0 120a56 56 0 1 1 56-56 56.064 56.064 0 0 1-56 56m-4-148V16a4 4 0 0 1 8 0v20a4 4 0 0 1-8 0M45.976 51.632a4 4 0 0 1 5.657-5.656l14.142 14.142a4 4 0 1 1-5.657 5.656ZM40 128a4 4 0 0 1-4 4H16a4 4 0 0 1 0-8h20a4 4 0 0 1 4 4m25.775 62.226a4 4 0 0 1 0 5.656l-14.142 14.142a4 4 0 1 1-5.657-5.656l14.142-14.142a4 4 0 0 1 5.657 0M132 220v20a4 4 0 0 1-8 0v-20a4 4 0 0 1 8 0m78.024-15.632a4 4 0 1 1-5.657 5.656l-14.142-14.142a4 4 0 0 1 5.657-5.656ZM244 128a4 4 0 0 1-4 4h-20a4 4 0 0 1 0-8h20a4 4 0 0 1 4 4m-33.976-82.024a4 4 0 0 1 0 5.656l-14.142 14.142a4 4 0 0 1-5.657-5.656l14.142-14.142a4 4 0 0 1 5.657 0"/>
+                    </svg>
+                    <svg class="moon" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.89 18.24a.49.49 0 0 0-.55-.17 9.4 9.4 0 0 1-11.46-4.78 9.53 9.53 0 0 1 2.82-11.4.49.49 0 0 0 .17-.55.5.5 0 0 0-.48-.34A11.38 11.38 0 0 0 5 4.76 11.52 11.52 0 0 0 13.39 24a11.37 11.37 0 0 0 9.53-5.18.48.48 0 0 0-.03-.58M13.39 23A10.52 10.52 0 0 1 5.71 5.43 10.4 10.4 0 0 1 12 2.1a10.52 10.52 0 0 0-2 11.61 10.24 10.24 0 0 0 11.27 5.68A10.35 10.35 0 0 1 13.39 23"/>
+                    </svg>
+                </label>
+            </div>
+            <div class="software-container"></div>
+                <svg fill="red" width="60" height="60" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="missingAppsBtn" style="cursor: pointer;">
+                    <path d="M12 16a1 1 0 1 0 1 1 1 1 0 0 0-1-1m10.67 1.47-8.05-14a3 3 0 0 0-5.24 0l-8 14A3 3 0 0 0 3.94 22h16.12a3 3 0 0 0 2.61-4.53m-1.73 2a1 1 0 0 1-.88.51H3.94a1 1 0 0 1-.88-.51 1 1 0 0 1 0-1l8-14a1 1 0 0 1 1.78 0l8.05 14a1 1 0 0 1 .05 1.02ZM12 8a1 1 0 0 0-1 1v4a1 1 0 0 0 2 0V9a1 1 0 0 0-1-1"/>
                 </svg>
-                <svg class="moon" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.89 18.24a.49.49 0 0 0-.55-.17 9.4 9.4 0 0 1-11.46-4.78 9.53 9.53 0 0 1 2.82-11.4.49.49 0 0 0 .17-.55.5.5 0 0 0-.48-.34A11.38 11.38 0 0 0 5 4.76 11.52 11.52 0 0 0 13.39 24a11.37 11.37 0 0 0 9.53-5.18.48.48 0 0 0-.03-.58M13.39 23A10.52 10.52 0 0 1 5.71 5.43 10.4 10.4 0 0 1 12 2.1a10.52 10.52 0 0 0-2 11.61 10.24 10.24 0 0 0 11.27 5.68A10.35 10.35 0 0 1 13.39 23"/>
-                </svg>
-            </label>
+                <div class="tooltip">Show applications listed in configmap but not found in the cluster</div>
+            </div>
         </div>
     </div>
-
-    <button id="missingAppsBtn">Check Missing Applications</button>
 
     <div id="missingAppsModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Missing Applications</h2>
+            <h2>Applications listed in configmap but not found in cluster:</h2>
             <ol id="missingAppsList"></ol>
         </div>
     </div>

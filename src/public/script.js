@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 } else {
                     let li = document.createElement('li');
-                    li.textContent = 'No missing applications.';
+                    li.textContent = 'All applications listed in configmap were found - nothing to display ';
                     missingAppsList.appendChild(li);
                 }
             })

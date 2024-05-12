@@ -109,6 +109,12 @@ body.dark-mode .header-container {
     color: #ddd;
 }
 
+.control-container {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+
 .toggle-container {
     width: 125px;
     height: 50px;
@@ -118,6 +124,31 @@ body.dark-mode .header-container {
     border-radius: 100px;
     box-shadow: inset 0px 5px 15px rgba(0,0,0,0.4), inset 0px -5px 15px rgba(255,255,255,0.4);
     cursor: pointer;
+}
+
+.software-container {
+    position: relative;
+    margin-left: 10px;
+}
+
+.software-container .tooltip {
+    position: absolute;
+    background-color: #f9f9f9;
+    color: black;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    visibility: hidden;
+    width: 300px; 
+    bottom: 100%; 
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1; 
+}
+
+.software-container:hover .tooltip {
+    visibility: visible; 
 }
 
 #theme-toggle {
