@@ -113,5 +113,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    fetch('/api/missing-apps')
+        .then(response => response.json())
+        .then(data => {
+            const failIcon = document.querySelector('.software-container .fail');
+            const passIcon = document.querySelector('.software-container .pass');
+            if (data.missingApps.length > 0) {
+                failIcon.classList.add('active');
+                passIcon.classList.remove('active');
+            } else {
+                failIcon.classList.remove('active');
+                passIcon.classList.add('active');
+            }
+        })
+        .catch(error => console.error('Error loading application status:', error));
+});
+
 // Initial fetch and display
 fetchAndDisplayPodImages();
