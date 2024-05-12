@@ -13,7 +13,7 @@ let lastSlackNotification = Date.now() - ONE_WEEK_IN_MS
 
 const app = express();
 let cache = null;
-let missingAppsCache = null;
+let cacheModal = null;
 let lastUpdated = Date.now();
 
 app.use(express.static(path.join(__dirname, 'public')));
