@@ -53,7 +53,8 @@
             <span class="close">&times;</span>
             <h2>Applications listed in configmap but not found in cluster:</h2>
             <ol id="missingAppsList"></ol>
-            <p style="font-size:12px">The application relies on having the Kubernetes label: "app:name" set in the deployment. Ensure that the missing applications have a label set to match what you are looking for.</p>
+            <p style="font-size:12px">The application relies on having the Kubernetes label: <em>app:name</em> set in the deployment for the current environment.</p> 
+            <p style="font-size:12px">Ensure that the applications listed here all have the correct label to match what you are looking for.</p>
             <p style="font-size:12px">Example label - <em>app: prometheus</em> </p>
         </div>
     </div>
@@ -68,7 +69,7 @@
 
     <div id="alertBox" class="alert" style="display: none;">
         <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-        <strong>Warning!</strong> There are applications listed in the configmap that were not found in the cluster. Click the exclamation mark for more information.
+        <strong>Warning!</strong> There are applications listed in the configmap that were not found in the cluster. Click the exclamation mark at the top right for more information.
     </div>
 
     <script>
