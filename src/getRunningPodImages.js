@@ -169,6 +169,18 @@ async function preProcess(containerObjects, maxPages = 5) {
   }
 }
 
+function normalizeVersion(clusterVersion, onlineVersion) {
+  const hasVPrefixOnline = onlineVersion.startsWith('v');
+  const hasVPrefixCluster = clusterVersion.startsWith('v');
+
+  if (hasVPrefixOnline && !hasVPrefixCluster) {
+    return 'v' + clusterVersion;
+  } else if (!hasVPrefixOnline && hasVPrefixCluster) {
+    return clusterVersion.slice(1);
+  }
+  return clusterVersion;
+}
+
 async function getRunningPodImages() {
   try {
     const { configObjects, expectedApps } = await fetchSoftwareConfig();
@@ -209,7 +221,9 @@ async function getRunningPodImages() {
 
     for (const containerObj of containerObjects) {
       if (containerObj.command) {
-        containerObj.newestImageAvailable = await fetchLatestImageTag(containerObj.command);
+        const newestImageAvailable = await fetchLatestImageTag(containerObj.command);
+        containerObj.newestImageAvailable = newestImageAvailable;
+        containerObj.imageVersionUsedInCluster = normalizeVersion(containerObj.imageVersionUsedInCluster, newestImageAvailable);
       }
       const softwareConfig = configObjects.find(s => s.name === containerObj.appName);
 
