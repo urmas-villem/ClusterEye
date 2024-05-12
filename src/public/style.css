@@ -266,3 +266,29 @@ body:not(.dark-mode) .moon {
   body.dark-mode .close:focus {
     color: #f9f9f9;
   }
+
+  .alert {
+    padding: 20px;
+    background-color: #ffcc00; 
+    color: rgb(255, 255, 255); 
+    position: fixed;
+    bottom: 0; 
+    width: 100%; 
+    box-shadow: 0px -5px 10px rgba(0,0,0,0.1); 
+    z-index: 1000;
+  }
+  
+  .closebtn {
+    margin-left: 15px;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .closebtn:hover {
+    color: rgb(255, 255, 255);
+  }

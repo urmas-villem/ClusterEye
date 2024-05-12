@@ -115,26 +115,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', function () {
     fetch('/api/missing-apps')
-        .then(response => response.json())
-        .then(data => {
-            const failIcon = document.querySelector('.software-container .fail');
-            const passIcon = document.querySelector('.software-container .pass');
-            if (data.missingApps && data.missingApps.length > 0) {
-                failIcon.style.display = 'block';
-                passIcon.style.display = 'none';
-            } else {
-                failIcon.style.display = 'none';
-                passIcon.style.display = 'block';
-            }
-        })
-        .catch(error => {
-            console.error('Error loading application status:', error);
-            const failIcon = document.querySelector('.software-container .fail');
-            const passIcon = document.querySelector('.software-container .pass');
-            failIcon.style.display = 'none';
-            passIcon.style.display = 'block';
-        });
-});
+      .then(response => response.json())
+      .then(data => {
+        const failIcon = document.querySelector('.software-container .fail');
+        const passIcon = document.querySelector('.software-container .pass');
+        const alertBox = document.getElementById('alertBox');
+        if (data.missingApps && data.missingApps.length > 0) {
+          failIcon.style.display = 'block';
+          passIcon.style.display = 'none';
+          alertBox.style.display = 'block';
+        } else {
+          failIcon.style.display = 'none';
+          passIcon.style.display = 'block';
+          alertBox.style.display = 'none';
+        }
+      })
+      .catch(error => {
+        console.error('Error loading application status:', error);
+        const failIcon = document.querySelector('.software-container .fail');
+        const passIcon = document.querySelector('.software-container .pass');
+        failIcon.style.display = 'none';
+        passIcon.style.display = 'block';
+        document.getElementById('alertBox').style.display = 'none';
+      });
+  });
 
 // Initial fetch and display
 fetchAndDisplayPodImages();

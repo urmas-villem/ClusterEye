@@ -64,6 +64,11 @@
     <div id="nextPoll"></div>
     <button id="pollButton">Poll Now</button>
 
+    <div id="alertBox" class="alert" style="display: none;">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        <strong>Warning!</strong> There are applications listed in the configmap that were not found in the cluster.
+    </div>
+
     <script>
         document.getElementById('reloadButton').addEventListener('click', function() {
             location.reload();
