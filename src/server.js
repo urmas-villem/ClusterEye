@@ -13,6 +13,7 @@ let lastSlackNotification = Date.now() - ONE_WEEK_IN_MS
 
 const app = express();
 let cache = null;
+let missingAppsCache = null;
 let lastUpdated = Date.now();
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -31,6 +32,7 @@ async function updateCache() {
     try {
         const result = await getRunningPodImages();
         cache = result.containerObjects;
+        cacheModal = result.missingApps;
         lastUpdated = Date.now();
         updateMetricsFromCache();
 
@@ -132,15 +134,10 @@ async function sendSlackNotification() {
     }
 }
 
-app.get('/api/missing-apps', async (req, res) => {
-    try {
-      const { missingApps } = await getRunningPodImages();
-      res.json({ missingApps });
-    } catch (error) {
-      console.error('Error fetching missing apps:', error);
-      res.status(500).send('Error fetching missing apps');
-    }
-  });
+// Endpoint for missing apps
+app.get('/api/missing-apps', (req, res) => {
+    res.json({ missingApps: missingAppsCache });
+});
 
 // Endpoint to trigger cache and Prometheus metrics updates
 app.post('/trigger-update', async (req, res) => {

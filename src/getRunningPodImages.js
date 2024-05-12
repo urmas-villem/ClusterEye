@@ -214,6 +214,7 @@ async function getRunningPodImages() {
       containerObj.sendToSlack = isVersionMismatch && eolPassed;
     }
 
+    console.log(containerObjects);
     return { containerObjects, missingApps };
   } catch (error) {
     console.error('Error:', error);
