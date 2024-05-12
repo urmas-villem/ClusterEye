@@ -167,31 +167,34 @@ async function getRunningPodImages() {
     const { configObjects, expectedApps } = await fetchSoftwareConfig();
     const res = await coreV1Api.listPodForAllNamespaces();
     const processedApps = new Set();
-    const containerObjects = res.body.items.flatMap(pod => {
+    const containerObjects = [];
+
+    for (const pod of res.body.items) {
       const appName = pod.metadata.labels?.app;
-      if (!expectedApps.has(appName)) {
-        return [];
+      if (!expectedApps.has(appName) || processedApps.has(appName)) {
+        continue;
       }
       processedApps.add(appName);
       const software = configObjects.find(s => s.name === appName);
 
       if (software && pod.status.containerStatuses) {
-        return pod.status.containerStatuses
-          .filter(status => {
-            const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
-            return status.name === containerNameToMatch;
-          })
-          .map(status => ({
-            containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
-            imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
-            imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
-            appName: appName,
-            command: software.command,
-            note: software.note || ''
-          }));
+        const statuses = pod.status.containerStatuses.filter(status => {
+          const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
+          return status.name === containerNameToMatch;
+        });
+
+        const statusObjects = statuses.map(status => ({
+          containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
+          imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
+          imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
+          appName: appName,
+          command: software.command,
+          note: software.note || ''
+        }));
+
+        containerObjects.push(...statusObjects);
       }
-      return [];
-    });
+    }
 
     await preProcess(containerObjects);
 
@@ -214,7 +217,7 @@ async function getRunningPodImages() {
       containerObj.sendToSlack = isVersionMismatch && eolPassed;
     }
 
-    console.log(containerObjects);
+    console.log({ containerObjects, missingApps });
     return { containerObjects, missingApps };
   } catch (error) {
     console.error('Error:', error);
