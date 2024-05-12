@@ -29,7 +29,8 @@ const containerInfoGauge = new promClient.Gauge({
 // Function to update the cache
 async function updateCache() {
     try {
-        cache = await getRunningPodImages();
+        const result = await getRunningPodImages();
+        cache = result.containerObjects;
         lastUpdated = Date.now();
         updateMetricsFromCache();
 
