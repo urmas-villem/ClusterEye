@@ -119,15 +119,21 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             const failIcon = document.querySelector('.software-container .fail');
             const passIcon = document.querySelector('.software-container .pass');
-            if (data.missingApps.length > 0) {
-                failIcon.classList.add('active');
-                passIcon.classList.remove('active');
+            if (data.missingApps && data.missingApps.length > 0) {
+                failIcon.style.display = 'block';
+                passIcon.style.display = 'none';
             } else {
-                failIcon.classList.remove('active');
-                passIcon.classList.add('active');
+                failIcon.style.display = 'none';
+                passIcon.style.display = 'block';
             }
         })
-        .catch(error => console.error('Error loading application status:', error));
+        .catch(error => {
+            console.error('Error loading application status:', error);
+            const failIcon = document.querySelector('.software-container .fail');
+            const passIcon = document.querySelector('.software-container .pass');
+            failIcon.style.display = 'none';
+            passIcon.style.display = 'block';
+        });
 });
 
 // Initial fetch and display
