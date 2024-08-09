@@ -219,23 +219,19 @@ async function getRunningPodImages() {
       }
 
       missingApps.delete(appName);
-
-      if (processedApps.has(appName)) {
-        continue;
-      }
       processedApps.add(appName);
       foundApps.push(appName);
       const software = configObjects.find(s => s.name === appName);
 
       if (software) {
-        const containerNameToMatch = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
-        const statuses = pod.status.containerStatuses.filter(status => status.name === containerNameToMatch);
+        const expectedContainerName = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
+        const containerFound = pod.status.containerStatuses.some(status => status.name === expectedContainerName);
 
-        if (statuses.length === 0) {
-          warnings.push(`Warning: Application "${appName}" is defined in ConfigMap but no container with the name "${containerNameToMatch}" was found in the respective pod. Check if the nameexception is correctly set in the ConfigMap.`);
+        if (!containerFound) {
+          warnings.push(`Warning: Application "${appName}" is defined in ConfigMap but no container with the name "${expectedContainerName}" was found in the respective pod. This can be intentional if the nameexception is set correctly in the configmap.`);
         } else {
-          const statusObjects = statuses.map(status => ({
-            containerName: containerNameToMatch,
+          const statusObjects = pod.status.containerStatuses.filter(status => status.name === expectedContainerName).map(status => ({
+            containerName: expectedContainerName,
             imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
             imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
             appName: appName,
@@ -248,14 +244,16 @@ async function getRunningPodImages() {
       }
     }
 
-    await preProcess(containerObjects);
-
     console.log(`Apps found in ConfigMap: ${Array.from(expectedApps).join(', ')}`);
-    console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
-    if (missingApps.size > 0) {
+    if (missingApps.size === 0) {
+      console.log("All apps defined in Configmap were found in the cluster.");
+    } else {
+      console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
       console.log(`Apps defined in ConfigMap but not found in cluster: ${Array.from(missingApps).join(', ')}`);
     }
     warnings.forEach(warning => console.warn(warning));
+
+    await preProcess(containerObjects);
 
     for (const containerObj of containerObjects) {
       if (containerObj.command) {
@@ -280,6 +278,5 @@ async function getRunningPodImages() {
     return { containerObjects: [], missingApps: [] };
   }
 }
-
 
 module.exports.getRunningPodImages = getRunningPodImages;
