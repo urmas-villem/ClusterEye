@@ -222,12 +222,13 @@ async function getRunningPodImages() {
       if (processedApps.has(appName)) {
         continue;
       }
-      
+
       processedApps.add(appName);
       foundApps.push(appName);
       const software = configObjects.find(s => s.name === appName);
 
       if (software) {
+        // Adjusted the check for nameexception here
         const expectedContainerName = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
         const containerFound = pod.status.containerStatuses.some(status => status.name === expectedContainerName);
 
@@ -235,7 +236,8 @@ async function getRunningPodImages() {
           warnings.push(`Warning: Application "${appName}" is defined in ConfigMap but no container with the name "${expectedContainerName}" was found in the respective pod. This can be intentional if the nameexception is set correctly in the configmap.`);
         } else {
           const statusObjects = pod.status.containerStatuses.filter(status => status.name === expectedContainerName).map(status => ({
-            containerName: expectedContainerName,
+            // Use appName for the containerName to ensure it matches the application name from the configmap
+            containerName: appName,
             imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
             imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
             appName: appName,
