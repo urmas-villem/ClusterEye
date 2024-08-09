@@ -1,1 +1,21 @@
-asd
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager2
+  labels:
+    app: alertmanager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alertmanager
+  template:
+    metadata:
+      labels:
+        app: alertmanager
+    spec:
+      containers:
+      - name: alertmanager
+        image: prom/alertmanager@sha256:e13b6ed5cb929eeaee733479dce55e10eb3bc2e9c4586c705a4e8da41e5eacf5
+        ports:
+        - containerPort: 9093
