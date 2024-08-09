@@ -223,6 +223,7 @@ async function getRunningPodImages() {
     const processedApps = new Set();
     const containerObjects = [];
     const missingApps = new Set(expectedApps);
+    let foundApps = [];
 
     for (const pod of res.body.items) {
       const appName = pod.metadata.labels?.app || pod.metadata.labels?.['app.kubernetes.io/name'];
@@ -237,7 +238,7 @@ async function getRunningPodImages() {
         continue;
       }
       processedApps.add(appName);
-      console.log('App defined in ConfigMap & found in cluster:', appName);
+      foundApps.push(appName);
       const software = configObjects.find(s => s.name === appName);
 
       if (software && pod.status.containerStatuses) {
@@ -261,9 +262,8 @@ async function getRunningPodImages() {
 
     await preProcess(containerObjects);
 
-    missingApps.forEach(app => {
-      console.log(`App defined in ConfigMap but not found in cluster: ${app}`);
-    });
+    console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
+    console.log(`Apps defined in ConfigMap but not found in cluster: ${Array.from(missingApps).join(', ')}`);
 
     for (const containerObj of containerObjects) {
       if (containerObj.command) {

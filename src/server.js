@@ -7,7 +7,7 @@ const { getRunningPodImages } = require('./getRunningPodImages');
 
 const PORT = 9191;
 const HOST = '0.0.0.0';
-const UPDATE_INTERVAL = 60 * 60 * 1000; // 3 hours
+const UPDATE_INTERVAL = 4 * 60 * 60 * 4000; // 4 hours
 
 const app = express();
 let cache = null;
