@@ -213,17 +213,14 @@ async function getRunningPodImages() {
 
     for (const pod of res.body.items) {
       const appName = pod.metadata.labels?.app || pod.metadata.labels?.['app.kubernetes.io/name'];
-      console.log(`Processing pod: ${pod.metadata.name}, App Name: ${appName}`);
 
       if (!expectedApps.has(appName)) {
-        console.log(`Skipping app not in expectedApps: ${appName}`);
         continue;
       }
 
       missingApps.delete(appName);
 
       if (processedApps.has(appName)) {
-        console.log(`Already processed: ${appName}`);
         continue;
       }
       processedApps.add(appName);
@@ -232,7 +229,6 @@ async function getRunningPodImages() {
 
       if (software) {
         const containerNameToMatch = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
-        console.log(`Checking containers for ${appName}: Expected container name: ${containerNameToMatch}`);
         const statuses = pod.status.containerStatuses.filter(status => status.name === containerNameToMatch);
 
         if (statuses.length === 0) {
@@ -284,5 +280,6 @@ async function getRunningPodImages() {
     return { containerObjects: [], missingApps: [] };
   }
 }
+
 
 module.exports.getRunningPodImages = getRunningPodImages;
