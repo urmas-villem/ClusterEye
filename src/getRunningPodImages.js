@@ -233,6 +233,10 @@ async function getRunningPodImages() {
                   return status.name === containerNameToMatch;
               });
 
+              if (software.nameexception && statuses.length === 0) {
+                console.warn(`Warning: The nameexception '${software.nameexception}' for '${appName}' did not match any containers. This may indicate a misconfiguration.`);
+              }
+
               const statusObjects = statuses.map(status => ({
                   containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
                   imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
