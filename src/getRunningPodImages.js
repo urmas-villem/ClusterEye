@@ -137,6 +137,7 @@ async function preProcess(containerObjects) {
   };
 
   for (const containerObj of containerObjects) {
+      console.log(imageVersionUsedInCluster)
       if (containerObj.imageVersionUsedInCluster.startsWith('sha256:')) {
           const sha = containerObj.imageVersionUsedInCluster;
           let repository = repositoryMap[containerObj.appName];
