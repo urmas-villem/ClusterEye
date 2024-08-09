@@ -225,7 +225,13 @@ async function getRunningPodImages() {
 
     for (const pod of res.body.items) {
       const appName = pod.metadata.labels?.app;
-      if (!expectedApps.has(appName) || processedApps.has(appName)) {
+      if (!expectedApps.has(appName)) {
+        console.log(`Unexpected app found in cluster: ${appName}`);
+        continue;
+      }
+
+      if (processedApps.has(appName)) {
+        console.log(`App already processed and will be skipped to avoid duplication: ${appName}`);
         continue;
       }
       processedApps.add(appName);
