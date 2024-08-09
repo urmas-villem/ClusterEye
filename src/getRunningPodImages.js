@@ -189,7 +189,6 @@ async function preProcess(containerObjects) {
   }
 }
 
-
 function normalizeVersion(clusterVersion, onlineVersion) {
   const hasVPrefixOnline = onlineVersion.startsWith('v');
   const hasVPrefixCluster = clusterVersion.startsWith('v');
@@ -240,7 +239,10 @@ async function getRunningPodImages() {
           note: software.note || ''
         }));
 
-        containerObjects.push(...statusObjects);
+        containerObjects.push({
+          ...software, 
+          statusObjects: statusObjects.length > 0 ? statusObjects : []
+        });
       }
     }
 
@@ -252,7 +254,7 @@ async function getRunningPodImages() {
 
     containerObjects.forEach(container => {
       if (container.statusObjects.length === 0) {
-        console.warn(`Warning: Application "${container.appName}" is defined in ConfigMap but no container with the name "${container.containerName}" was found with the respective pod. Check if the nameexception is correctly set in the ConfigMap.`);
+        console.warn(`Warning: Application "${container.appName}" is defined in ConfigMap but no container with the name "${container.containerName}" was found in the respective pod. Check if the nameexception is correctly set in the ConfigMap.`);
       }
     });
 
