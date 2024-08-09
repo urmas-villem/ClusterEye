@@ -213,6 +213,7 @@ async function getRunningPodImages() {
 
     for (const pod of res.body.items) {
       const appName = pod.metadata.labels?.app || pod.metadata.labels?.['app.kubernetes.io/name'];
+      console.log(`Processing pod: ${pod.metadata.name}, App Name: ${appName}`);
 
       if (!expectedApps.has(appName)) {
         console.log(`Skipping app not in expectedApps: ${appName}`);
@@ -231,9 +232,8 @@ async function getRunningPodImages() {
 
       if (software) {
         const containerNameToMatch = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
-        const statuses = pod.status.containerStatuses.filter(status => status.name === containerNameToMatch);
-
         console.log(`Checking containers for ${appName}: Expected container name: ${containerNameToMatch}`);
+        const statuses = pod.status.containerStatuses.filter(status => status.name === containerNameToMatch);
 
         if (statuses.length === 0) {
           warnings.push(`Warning: Application "${appName}" is defined in ConfigMap but no container with the name "${containerNameToMatch}" was found in the respective pod. Check if the nameexception is correctly set in the ConfigMap.`);
@@ -256,9 +256,7 @@ async function getRunningPodImages() {
 
     console.log(`Apps found in ConfigMap: ${Array.from(expectedApps).join(', ')}`);
     console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
-    if (missingApps.size === 0) {
-      console.log('All apps defined in ConfigMap were found in cluster');
-    } else {
+    if (missingApps.size > 0) {
       console.log(`Apps defined in ConfigMap but not found in cluster: ${Array.from(missingApps).join(', ')}`);
     }
     warnings.forEach(warning => console.warn(warning));
