@@ -6,12 +6,12 @@ metadata:
 spec:
   project: default
   source:
-    helm:
-      valueFiles:
-      - values.yaml
     repoURL: https://github.com/urmas-villem/ClusterEye.git
     targetRevision: HEAD
     path: kubernetes/Testsoftware/grafana-loki
+    helm:
+      valueFiles:
+      - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: default
