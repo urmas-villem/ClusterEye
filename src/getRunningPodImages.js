@@ -244,17 +244,15 @@ async function getRunningPodImages() {
       }
     }
 
-    // First log the apps found in config and their state in the cluster
     console.log(`Apps found in ConfigMap: ${Array.from(expectedApps).join(', ')}`);
     console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
     if (missingApps.size > 0) {
       console.log(`Apps defined in ConfigMap but not found in cluster: ${Array.from(missingApps).join(', ')}`);
     }
 
-    // Then log warnings for any issues found during processing
     containerObjects.forEach(container => {
       if (container.statusObjects.length === 0) {
-        console.warn(`Warning: Software "${container.appName}" is defined in ConfigMap but no container with name "${container.containerName}" was found. Check if the nameexception is correctly set in the ConfigMap.`);
+        console.warn(`Warning: Application "${container.appName}" is defined in ConfigMap but no container with name "${container.containerName}" was found with the respective pod. Check if the nameexception is correctly set in the ConfigMap.`);
       }
     });
 
