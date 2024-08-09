@@ -219,6 +219,10 @@ async function getRunningPodImages() {
       }
 
       missingApps.delete(appName);
+      if (processedApps.has(appName)) {
+        continue;
+      }
+      
       processedApps.add(appName);
       foundApps.push(appName);
       const software = configObjects.find(s => s.name === appName);
