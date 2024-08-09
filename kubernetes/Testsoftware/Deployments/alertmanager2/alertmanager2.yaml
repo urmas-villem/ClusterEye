@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alertmanager
+  name: alertmanager2
   labels:
     app: alertmanager
 spec:
