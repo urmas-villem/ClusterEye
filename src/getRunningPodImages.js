@@ -228,23 +228,23 @@ async function getRunningPodImages() {
       const software = configObjects.find(s => s.name === appName);
 
       if (software) {
-        const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
+        const containerNameToMatch = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
         const statuses = pod.status.containerStatuses.filter(status => status.name === containerNameToMatch);
 
         if (statuses.length === 0) {
-          warnings.push(`Warning: Application: "${appName}" is defined in ConfigMap but no container with the name "${containerNameToMatch}" was found in the respective pod. Check if the nameexception is correctly set in the ConfigMap.`);
+          warnings.push(`Warning: Application "${appName}" is defined in ConfigMap but no container with the name "${containerNameToMatch}" was found in the respective pod. Check if the nameexception is correctly set in the ConfigMap.`);
+        } else {
+          const statusObjects = statuses.map(status => ({
+            containerName: containerNameToMatch,
+            imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
+            imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
+            appName: appName,
+            command: software.command,
+            note: software.note || ''
+          }));
+
+          containerObjects.push(...statusObjects);
         }
-
-        const statusObjects = statuses.map(status => ({
-          containerName: containerNameToMatch,
-          imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
-          imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
-          appName: appName,
-          command: software.command,
-          note: software.note || ''
-        }));
-
-        containerObjects.push(...statusObjects);
       }
     }
 
