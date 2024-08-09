@@ -8,7 +8,7 @@ const coreV1Api = kubeConfig.makeApiClient(k8s.CoreV1Api);
 
 async function fetchSoftwareConfig() {
   try {
-    const configMap = await coreV1Api.readNamespacedConfigMap('clustereye-config', 'default');
+    const configMap = await coreV1Api.readNamespacedConfigMap('clustereye-config', 'default);
     const softwareConfig = configMap.body.data;
     let expectedApps = new Set();
     const configObjects = Object.entries(softwareConfig).map(([key, value]) => {
