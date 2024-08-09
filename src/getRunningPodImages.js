@@ -224,7 +224,13 @@ async function getRunningPodImages() {
     const containerObjects = [];
 
     for (const pod of res.body.items) {
-      const appName = pod.metadata.labels?.app;
+      const appName = pod.metadata.labels?.app || pod.metadata.labels?.['app.kubernetes.io/name'];
+
+      if (!appName) {
+        console.log(`Unexpected or misconfigured pod found: Pod Name: ${pod.metadata.name}, Namespace: ${pod.metadata.namespace}`);
+        continue;
+      }
+
       if (!expectedApps.has(appName)) {
         console.log(`Unexpected app found in cluster: ${appName}`);
         continue;
