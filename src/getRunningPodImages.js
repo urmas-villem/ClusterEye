@@ -227,13 +227,9 @@ async function getRunningPodImages() {
       foundApps.push(appName);
       const software = configObjects.find(s => s.name === appName);
 
-      if (software) {
+      if (software && pod.status.containerStatuses) {
         const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
         const statuses = pod.status.containerStatuses.filter(status => status.name === containerNameToMatch);
-
-        if (statuses.length === 0) {
-          console.warn(`Warning: Software "${appName}" is defined in ConfigMap but no container with name "${containerNameToMatch}" was found. Check if the nameexception is correctly set in the ConfigMap.`);
-        }
 
         const statusObjects = statuses.map(status => ({
           containerName: containerNameToMatch,
@@ -248,15 +244,19 @@ async function getRunningPodImages() {
       }
     }
 
-    await preProcess(containerObjects);
-
+    // First log the apps found in config and their state in the cluster
     console.log(`Apps found in ConfigMap: ${Array.from(expectedApps).join(', ')}`);
-    if (missingApps.size === 0) {
-      console.log('All apps defined in ConfigMap were found in cluster');
-    } else {
-      console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
+    console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
+    if (missingApps.size > 0) {
       console.log(`Apps defined in ConfigMap but not found in cluster: ${Array.from(missingApps).join(', ')}`);
     }
+
+    // Then log warnings for any issues found during processing
+    containerObjects.forEach(container => {
+      if (container.statusObjects.length === 0) {
+        console.warn(`Warning: Software "${container.appName}" is defined in ConfigMap but no container with name "${container.containerName}" was found. Check if the nameexception is correctly set in the ConfigMap.`);
+      }
+    });
 
     for (const containerObj of containerObjects) {
       if (containerObj.command) {
@@ -281,5 +281,6 @@ async function getRunningPodImages() {
     return { containerObjects: [], missingApps: [] };
   }
 }
+
 
 module.exports.getRunningPodImages = getRunningPodImages;
