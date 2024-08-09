@@ -222,22 +222,18 @@ async function getRunningPodImages() {
     const res = await coreV1Api.listPodForAllNamespaces();
     const processedApps = new Set();
     const containerObjects = [];
+    const missingApps = new Set(expectedApps);
 
     for (const pod of res.body.items) {
       const appName = pod.metadata.labels?.app || pod.metadata.labels?.['app.kubernetes.io/name'];
 
-      if (!appName) {
-        console.log(`Unexpected or misconfigured pod found: Pod Name: ${pod.metadata.name}, Namespace: ${pod.metadata.namespace}`);
-        continue;
-      }
-
       if (!expectedApps.has(appName)) {
-        console.log(`Unexpected app found in cluster: ${appName}`);
         continue;
       }
 
+      missingApps.delete(appName);
+      
       if (processedApps.has(appName)) {
-        console.log(`App already processed and will be skipped to avoid duplication: ${appName}`);
         continue;
       }
       processedApps.add(appName);
@@ -265,7 +261,9 @@ async function getRunningPodImages() {
 
     await preProcess(containerObjects);
 
-    const missingApps = [...expectedApps].filter(app => !processedApps.has(app));
+    missingApps.forEach(app => {
+      console.log(`App defined in ConfigMap but not found in cluster: ${app}`);
+    });
 
     for (const containerObj of containerObjects) {
       if (containerObj.command) {
@@ -286,8 +284,8 @@ async function getRunningPodImages() {
       containerObj.sendToSlack = isVersionMismatch && eolPassed;
     }
 
-    console.log({ containerObjects, missingApps });
-    return { containerObjects, missingApps };
+    console.log({ containerObjects, missingApps: Array.from(missingApps) });
+    return { containerObjects, missingApps: Array.from(missingApps) };
   } catch (error) {
     console.error('Error:', error);
     return { containerObjects: [], missingApps: [] };
