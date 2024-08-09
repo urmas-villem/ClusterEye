@@ -230,6 +230,10 @@ async function getRunningPodImages() {
         const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
         const statuses = pod.status.containerStatuses.filter(status => status.name === containerNameToMatch);
 
+        if (statuses.length === 0) {
+          console.warn(`Warning: Software "${appName}" is defined in ConfigMap but no container with name "${containerNameToMatch}" was found. Check if the nameexception is correctly set in the ConfigMap.`);
+        }
+
         const statusObjects = statuses.map(status => ({
           containerName: containerNameToMatch,
           imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
@@ -239,24 +243,19 @@ async function getRunningPodImages() {
           note: software.note || ''
         }));
 
-        containerObjects.push({
-          ...software, 
-          statusObjects: statusObjects.length > 0 ? statusObjects : []
-        });
+        containerObjects.push(...statusObjects);
       }
     }
+
+    await preProcess(containerObjects);
 
     console.log(`Apps found in ConfigMap: ${Array.from(expectedApps).join(', ')}`);
-    console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
-    if (missingApps.size > 0) {
+    if (missingApps.size === 0) {
+      console.log('All apps defined in ConfigMap were found in cluster');
+    } else {
+      console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
       console.log(`Apps defined in ConfigMap but not found in cluster: ${Array.from(missingApps).join(', ')}`);
     }
-
-    containerObjects.forEach(container => {
-      if (container.statusObjects.length === 0) {
-        console.warn(`Warning: Application "${container.appName}" is defined in ConfigMap but no container with the name "${container.containerName}" was found in the respective pod. Check if the nameexception is correctly set in the ConfigMap.`);
-      }
-    });
 
     for (const containerObj of containerObjects) {
       if (containerObj.command) {
