@@ -15,7 +15,6 @@ async function fetchSoftwareConfig() {
       expectedApps.add(key);
       return { name: key, ...JSON.parse(value) };
     });
-    console.log('Apps found in ConfigMap:', Array.from(expectedApps).join(', '));
     return { configObjects, expectedApps };
   } catch (error) {
     console.error('Error fetching software config:', error);
