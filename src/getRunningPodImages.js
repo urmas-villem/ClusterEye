@@ -212,43 +212,42 @@ async function getRunningPodImages() {
       let foundApps = [];
 
       for (const pod of res.body.items) {
-          const appName = pod.metadata.labels?.app || pod.metadata.labels?.['app.kubernetes.io/name'];
-
-          if (!expectedApps.has(appName)) {
-              continue;
-          }
-
-          missingApps.delete(appName);
-
-          if (processedApps.has(appName)) {
-              continue;
-          }
-          processedApps.add(appName);
-          foundApps.push(appName);
-          const software = configObjects.find(s => s.name === appName);
-
-          if (software && pod.status.containerStatuses) {
-              const statuses = pod.status.containerStatuses.filter(status => {
-                  const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
-                  return status.name === containerNameToMatch;
-              });
-
-              if (software.nameexception && statuses.length === 0) {
-                console.warn(`Warning: The nameexception '${software.nameexception}' for '${appName}' did not match any containers. This may indicate a misconfiguration.`);
-              }
-
-              const statusObjects = statuses.map(status => ({
-                  containerName: software.nameexception && software.nameexception !== "" ? appName : status.name,
-                  imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
-                  imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
-                  appName: appName,
-                  command: software.command,
-                  note: software.note || ''
-              }));
-
-              containerObjects.push(...statusObjects);
-          }
+        const appName = pod.metadata.labels?.app || pod.metadata.labels?.['app.kubernetes.io/name'];
+    
+        if (!expectedApps.has(appName)) {
+            continue;
+        }
+    
+        missingApps.delete(appName);
+    
+        if (processedApps.has(appName)) {
+            continue;
+        }
+        processedApps.add(appName);
+        foundApps.push(appName);
+        const software = configObjects.find(s => s.name === appName);
+    
+        if (software && pod.status.containerStatuses) {
+            const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
+            const statuses = pod.status.containerStatuses.filter(status => status.name === containerNameToMatch);
+    
+            if (statuses.length === 0) {
+                console.warn(`Warning: No containers matched for '${appName}' with exception '${software.nameexception}'. Expected container name: '${containerNameToMatch}'.`);
+            }
+    
+            const statusObjects = statuses.map(status => ({
+                containerName: containerNameToMatch,
+                imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
+                imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
+                appName: appName,
+                command: software.command,
+                note: software.note || ''
+            }));
+    
+            containerObjects.push(...statusObjects);
+        }
       }
+    
 
       await preProcess(containerObjects);
 
