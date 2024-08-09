@@ -3,7 +3,7 @@ loki:
   
   serviceAccount:
     create: true
-    annotations: {eks.amazonaws.com/role-arn: arn:aws:iam::115304599867:role/loki}
+    annotations: {eks.amazonaws.com/role-arn: arn:aws:iam::115340599867:role/loki}
   
   monitoring:
     dashboards:
@@ -34,11 +34,11 @@ loki:
     storage:
       type: s3
       bucketNames: 
-        chunks: "loki-default-dev"
-        ruler: "loki-default-dev"
-        admin: "loki-default-dev"
+        chunks: "loki-default-1"
+        ruler: "loki-default-1"
+        admin: "loki-default-1"
       s3:
-        s3: "s3://loki-default-dev"
+        s3: "s3://loki-default-1"
         region: us-east-1
         s3ForcePathStyle: false
         insecure: false
@@ -83,10 +83,10 @@ loki:
       storage:
         storage:
           s3:
-            bucketnames: loki-default-dev
+            bucketnames: loki-default-1
             insecure: false
             region: us-east-1
-            s3: s3://loki-default-dev
+            s3: s3://loki-default-1
             s3forcepathstyle: false
             #deprecated value
             sse_encryption: true
