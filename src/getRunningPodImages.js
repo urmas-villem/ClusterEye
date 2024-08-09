@@ -204,82 +204,81 @@ function normalizeVersion(clusterVersion, onlineVersion) {
 
 async function getRunningPodImages() {
   try {
-      const { configObjects, expectedApps } = await fetchSoftwareConfig();
-      const res = await coreV1Api.listPodForAllNamespaces();
-      const processedApps = new Set();
-      const containerObjects = [];
-      const missingApps = new Set(expectedApps);
-      let foundApps = [];
+    const { configObjects, expectedApps } = await fetchSoftwareConfig();
+    const res = await coreV1Api.listPodForAllNamespaces();
+    const processedApps = new Set();
+    const containerObjects = [];
+    const missingApps = new Set(expectedApps);
+    let foundApps = [];
 
-      for (const pod of res.body.items) {
-        const appName = pod.metadata.labels?.app || pod.metadata.labels?.['app.kubernetes.io/name'];
-    
-        if (!expectedApps.has(appName)) {
-            continue;
-        }
-    
-        missingApps.delete(appName);
-    
-        if (processedApps.has(appName)) {
-            continue;
-        }
-        processedApps.add(appName);
-        foundApps.push(appName);
-        const software = configObjects.find(s => s.name === appName);
-    
-        if (software && pod.status.containerStatuses) {
-            const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
-            const statuses = pod.status.containerStatuses.filter(status => status.name === containerNameToMatch);
-    
-            if (statuses.length === 0) {
-                console.warn(`Warning: No containers matched for '${appName}' with exception '${software.nameexception}'. Expected container name: '${containerNameToMatch}'.`);
-            }
-    
-            const statusObjects = statuses.map(status => ({
-                containerName: containerNameToMatch,
-                imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
-                imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
-                appName: appName,
-                command: software.command,
-                note: software.note || ''
-            }));
-    
-            containerObjects.push(...statusObjects);
-        }
+    for (const pod of res.body.items) {
+      const appName = pod.metadata.labels?.app || pod.metadata.labels?.['app.kubernetes.io/name'];
+
+      if (!expectedApps.has(appName)) {
+        continue;
       }
-    
 
-      await preProcess(containerObjects);
+      missingApps.delete(appName);
 
-      console.log(`Apps found in ConfigMap: ${Array.from(expectedApps).join(', ')}`);
-      if (missingApps.size === 0) {
-          console.log('All apps defined in ConfigMap were found in cluster');
+      if (processedApps.has(appName)) {
+        continue;
+      }
+      processedApps.add(appName);
+      foundApps.push(appName);
+      const software = configObjects.find(s => s.name === appName);
+
+      if (software) {
+        const containerNameToMatch = software.nameexception && software.nameexception !== "" ? software.nameexception : appName;
+        const statuses = pod.status.containerStatuses.filter(status => status.name === containerNameToMatch);
+
+        if (statuses.length === 0) {
+          console.warn(`Warning: Software "${appName}" is defined in ConfigMap but no container with name "${containerNameToMatch}" was found. Check if the nameexception is correctly set in the ConfigMap.`);
+        }
+
+        const statusObjects = statuses.map(status => ({
+          containerName: containerNameToMatch,
+          imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
+          imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
+          appName: appName,
+          command: software.command,
+          note: software.note || ''
+        }));
+
+        containerObjects.push(...statusObjects);
+      }
+    }
+
+    await preProcess(containerObjects);
+
+    console.log(`Apps found in ConfigMap: ${Array.from(expectedApps).join(', ')}`);
+    if (missingApps.size === 0) {
+      console.log('All apps defined in ConfigMap were found in cluster');
+    } else {
+      console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
+      console.log(`Apps defined in ConfigMap but not found in cluster: ${Array.from(missingApps).join(', ')}`);
+    }
+
+    for (const containerObj of containerObjects) {
+      if (containerObj.command) {
+        const newestImageAvailable = await fetchLatestImageTag(containerObj.command);
+        containerObj.newestImageAvailable = newestImageAvailable;
+        containerObj.imageVersionUsedInCluster = normalizeVersion(containerObj.imageVersionUsedInCluster, newestImageAvailable);
+      }
+      const softwareConfig = configObjects.find(s => s.name === containerObj.appName);
+
+      if (softwareConfig && softwareConfig.eolUrl) {
+        containerObj.eolDate = await fetchEOLDate(containerObj.appName, containerObj.imageVersionUsedInCluster, softwareConfig.eolUrl);
       } else {
-          console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
-          console.log(`Apps defined in ConfigMap but not found in cluster: ${Array.from(missingApps).join(', ')}`);
+        containerObj.eolDate = 'EOL information not available';
       }
+      containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
+    }
 
-      for (const containerObj of containerObjects) {
-          if (containerObj.command) {
-              const newestImageAvailable = await fetchLatestImageTag(containerObj.command);
-              containerObj.newestImageAvailable = newestImageAvailable;
-              containerObj.imageVersionUsedInCluster = normalizeVersion(containerObj.imageVersionUsedInCluster, newestImageAvailable);
-          }
-          const softwareConfig = configObjects.find(s => s.name === containerObj.appName);
-
-          if (softwareConfig && softwareConfig.eolUrl) {
-              containerObj.eolDate = await fetchEOLDate(containerObj.appName, containerObj.imageVersionUsedInCluster, softwareConfig.eolUrl);
-          } else {
-              containerObj.eolDate = 'EOL information not available';
-          }
-          containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
-      }
-
-      console.log({ containerObjects });
-      return { containerObjects, missingApps: Array.from(missingApps) };
+    console.log({ containerObjects });
+    return { containerObjects, missingApps: Array.from(missingApps) };
   } catch (error) {
-      console.error('Error:', error);
-      return { containerObjects: [], missingApps: [] };
+    console.error('Error:', error);
+    return { containerObjects: [], missingApps: [] };
   }
 }
 
