@@ -50,9 +50,6 @@ $dockerPassword = Read-Host "Enter Docker registry password" -AsSecureString
 $plainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($dockerPassword))
 kubectl create secret docker-registry docker-credentials --docker-username=huxlee --docker-password=$plainPassword --docker-email=random@random.com --namespace jenkins
 
-$webhook = Read-Host "Enter slack webhook secret"
-kubectl create secret generic slack-webhook-secret --from-literal=SLACK_WEBHOOK_URL=$webhook
-
 Write-Host "Docker secret created" -ForegroundColor Green
 Write-Host "***************************"
 Write-Host "**Environment setup ready**"
