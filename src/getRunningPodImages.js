@@ -23,19 +23,6 @@ async function fetchSoftwareConfig() {
   }
 }
 
-function isDatePassed(eolDate) {
-  if (eolDate === 'EOL information not available') {
-      return true;
-  }
-
-  if (!eolDate || isNaN(Date.parse(eolDate))) {
-      return false;
-  }
-  const today = new Date();
-  const eol = new Date(eolDate);
-  return today > eol;
-}
-
 function eolDays(eolDate) {
   if (!eolDate || isNaN(Date.parse(eolDate))) {
       return '';
@@ -281,7 +268,7 @@ async function getRunningPodImages() {
       containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
     }
 
-    console.log({ containerObjects, missingApps: Array.from(missingApps) });
+    console.log({ containerObjects });
     return { containerObjects, missingApps: Array.from(missingApps) };
   } catch (error) {
     console.error('Error:', error);
