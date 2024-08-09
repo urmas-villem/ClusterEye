@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: alertmanager2
   labels:
-    app: alertmanager
+    app: alertmanager2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: alertmanager
+      app: alertmanager2
   template:
     metadata:
       labels:
-        app: alertmanager
+        app: alertmanager2
     spec:
       containers:
       - name: alertmanager
