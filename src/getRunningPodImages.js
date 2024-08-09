@@ -15,6 +15,7 @@ async function fetchSoftwareConfig() {
       expectedApps.add(key);
       return { name: key, ...JSON.parse(value) };
     });
+    console.log('Apps found in ConfigMap:', Array.from(expectedApps).join(', '));
     return { configObjects, expectedApps };
   } catch (error) {
     console.error('Error fetching software config:', error);
@@ -228,6 +229,7 @@ async function getRunningPodImages() {
         continue;
       }
       processedApps.add(appName);
+      console.log('App found in cluster:', appName);
       const software = configObjects.find(s => s.name === appName);
 
       if (software && pod.status.containerStatuses) {
