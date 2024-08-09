@@ -232,12 +232,12 @@ async function getRunningPodImages() {
       }
 
       missingApps.delete(appName);
-      
+
       if (processedApps.has(appName)) {
         continue;
       }
       processedApps.add(appName);
-      console.log('App found in cluster:', appName);
+      console.log('App defined in ConfigMap & found in cluster:', appName);
       const software = configObjects.find(s => s.name === appName);
 
       if (software && pod.status.containerStatuses) {
@@ -279,9 +279,6 @@ async function getRunningPodImages() {
         containerObj.eolDate = 'EOL information not available';
       }
       containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
-      const isVersionMismatch = containerObj.imageVersionUsedInCluster !== containerObj.newestImageAvailable;
-      const eolPassed = isDatePassed(containerObj.eolDate);
-      containerObj.sendToSlack = isVersionMismatch && eolPassed;
     }
 
     console.log({ containerObjects, missingApps: Array.from(missingApps) });

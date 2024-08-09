@@ -7,9 +7,7 @@ const { getRunningPodImages } = require('./getRunningPodImages');
 
 const PORT = 9191;
 const HOST = '0.0.0.0';
-const UPDATE_INTERVAL = 60 * 60 * 1000; // 1 hour
-const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
-let lastSlackNotification = Date.now() - ONE_WEEK_IN_MS
+const UPDATE_INTERVAL = 60 * 60 * 1000; // 3 hours
 
 const app = express();
 let cache = null;
@@ -35,11 +33,6 @@ async function updateCache() {
         cacheModal = result.missingApps;
         lastUpdated = Date.now();
         updateMetricsFromCache();
-
-        if (Date.now() - lastSlackNotification >= ONE_WEEK_IN_MS) {
-            await sendSlackNotification();
-            lastSlackNotification = Date.now();
-        }
     } catch (error) {
         console.error('Error updating cache:', error);
     }
@@ -53,87 +46,6 @@ function updateMetricsFromCache() {
         cache.forEach(pod => {
             containerInfoGauge.labels(pod.containerName, pod.imageRepository, pod.imageVersionUsedInCluster, pod.newestImageAvailable).set(1);
         });
-    }
-}
-
-async function sendSlackNotification() {
-    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
-    const environmentMapping = {
-        '115304599867': 'dev',
-        // more here later
-    };
-
-    const accountNumberRegex = /(\d+)\.dkr\.ecr\..*\.amazonaws\.com/;
-    let globalEnv = 'unknown environment'; 
-
-    for (const item of cache) {
-        const match = item.imageRepository.match(accountNumberRegex);
-        if (match && match[1] && environmentMapping[match[1]]) {
-            globalEnv = environmentMapping[match[1]];
-            break;
-        }
-    }
-
-    const updatesByEnvironment = {};
-
-    for (const item of cache) {
-        if (item.sendToSlack) {
-            if (!updatesByEnvironment[globalEnv]) {
-                updatesByEnvironment[globalEnv] = [];
-            }
-            updatesByEnvironment[globalEnv].push({
-                containerName: item.containerName,
-                versionUsed: item.imageVersionUsedInCluster,
-                newestVersion: item.newestImageAvailable
-            });
-        }
-    }
-
-    for (const [env, updates] of Object.entries(updatesByEnvironment)) {
-        const blocks = updates.map(update => ({
-            type: "section",
-            text: {
-                type: "mrkdwn",
-                text: `*${update.containerName}* Version used: \`${update.versionUsed}\`, newest image: \`${update.newestVersion}\``
-            }
-        }));
-
-        const currentTimestamp = Math.floor(Date.now() / 1000);
-        blocks.push({
-            type: "context",
-            elements: [{
-                type: "mrkdwn",
-                text: `_<!date^${currentTimestamp}^{date} {time}|{date} {time}>_`
-            }]
-        });
-
-        const payload = {
-            attachments: [{
-                color: "#f2c744",
-                blocks: [
-                    {
-                        type: "section",
-                        text: {
-                            type: "mrkdwn",
-                            text: `*\`${env}\` has images that can be upgraded:*`
-                        }
-                    },
-                    ...blocks
-                ]
-            }]
-        };
-
-        try {
-            await fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            });
-        } catch (error) {
-            console.error(`Error sending Slack notification for environment ${env}:`, error);
-        }
     }
 }
 
