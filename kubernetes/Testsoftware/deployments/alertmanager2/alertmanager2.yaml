@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: alertmanager
-        image: 322837671572.dkr.ecr.eu-central-1.amazonaws.com/dockerhub/prom/alertmanager@sha256:db8303fa05341f5dc6b19b36a97325cd1b8307254ed9042a2c554af71f3c0284
+        image: 6256741518459.dkr.ecr.eu-west-1.amazonaws.com/dockerhub/prom/alertmanager@sha256:db8303fa05341f5dc6b19b36a97325cd1b8307254ed9042a2c554af71f3c0284
         ports:
         - containerPort: 9093
