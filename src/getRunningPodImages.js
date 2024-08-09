@@ -8,7 +8,7 @@ const coreV1Api = kubeConfig.makeApiClient(k8s.CoreV1Api);
 
 async function fetchSoftwareConfig() {
   try {
-    const configMap = await coreV1Api.readNamespacedConfigMap('clustereye-config', 'default');
+    const configMap = await coreV1Api.readNamespacedConfigMap('clustereye-config', 'monitoring');
     const softwareConfig = configMap.body.data;
     let expectedApps = new Set();
     const configObjects = Object.entries(softwareConfig).map(([key, value]) => {
@@ -53,26 +53,39 @@ function eolDays(eolDate) {
 }
 
 async function fetchLatestImageTag(commandArray) {
-  const networkErrorMessage = 'Network error occurred with getting latest version, try again in a few minutes';
-
   const command = commandArray.join(' ');
   console.log(`Executing command: ${command}`);
 
   try {
     const { stdout, stderr } = await exec(command);
-    
+
     if (stderr || !stdout || stdout.trim() === 'null') {
       console.error(`Error in command execution: ${stderr}`);
       console.log(`Standard output received: ${stdout}`);
-      return networkErrorMessage;
+      return await fetchRateLimitInfo();
     }
-    
+
     console.log(`Command executed successfully. Output: ${stdout.trim()}`);
     return stdout.trim();
   } catch (error) {
     console.error(`Error fetching latest tag: ${error.message}`);
     console.error(`Full error stack: ${error.stack}`);
-    return networkErrorMessage;
+    return await fetchRateLimitInfo();
+  }
+}
+
+async function fetchRateLimitInfo() {
+  try {
+    const rateLimitCommand = `curl -s https://api.github.com/rate_limit | jq '.rate.reset' | xargs -I{} sh -c 'echo $(({} - $(date +%s)))' | awk '{printf "Time until rate limit reset: %d hours, %d minutes, %d seconds\\n", $1/3600, ($1%3600)/60, $1%60}'`;
+    const { stdout, stderr } = await exec(rateLimitCommand);
+    if (stderr) {
+      console.error(`Error fetching rate limit info: ${stderr}`);
+      return 'Unable to fetch rate limit reset time due to an error.';
+    }
+    return `Rate limit will reset in: ${stdout.trim()}`;
+  } catch (error) {
+    console.error(`Error in fetching rate limit: ${error.message}`);
+    return 'Unable to fetch rate limit reset time due to an error.';
   }
 }
 
@@ -123,41 +136,61 @@ async function fetchEOLDate(appName, version, eolUrl) {
   }
 }
 
-async function preProcess(containerObjects, maxPages = 5) {
+async function preProcess(containerObjects) {
   const repositoryMap = {
       'alertmanager': 'alertmanager',
       'prometheus': 'prometheus',
       'blackbox': 'blackbox-exporter',
       'node-exporter': 'node-exporter',
-      'kafka-exporter': 'kafka-exporter'
-      // Additional mappings if necessary
+      'kafka-exporter': 'kafka-exporter',
+      'cloudwatch-exporter': 'cloudwatch-exporter',
+      'opentelemetry-collector': 'opentelemetry-collector-contrib',
+      'jaeger': 'all-in-one',
+      'redis-exporter': 'redis-exporter'
   };
 
   for (const containerObj of containerObjects) {
       if (containerObj.imageVersionUsedInCluster.startsWith('sha256:')) {
           const sha = containerObj.imageVersionUsedInCluster;
-          const repository = repositoryMap[containerObj.appName];
-
+          let repository = repositoryMap[containerObj.appName];
           if (!repository) {
               console.error('Repository not defined for application:', containerObj.appName);
               continue;
           }
 
-          // Determine the correct namespace based on the repository
           let namespace = 'prom';
           if (containerObj.appName === 'kafka-exporter') {
               namespace = 'danielqsj';
+          } else if (containerObj.appName === 'opentelemetry-collector') {
+              namespace = 'otel';
+          } else if (containerObj.appName === 'jaeger') {
+              namespace = 'jaegertracing';
+          } else if (containerObj.appName === 'redis-exporter') {
+              namespace = 'bitnami';
+          }
+
+          console.log(`Finding image tag in dockerhub for ${sha}`);
+
+          const pageCheckCommand = `curl -s "https://hub.docker.com/v2/namespaces/${namespace}/repositories/${repository}/tags?page_size=10" | jq '.count / 10 | ceil'`;
+          let maxPages = 7; // Default if fetching fails
+          try {
+              const { stdout: totalPageOutput } = await exec(pageCheckCommand);
+              maxPages = Number(totalPageOutput.trim());
+          } catch (error) {
+              console.error('Error fetching total pages:', error);
           }
 
           for (let page = 1; page <= maxPages; page++) {
-              const curlCommand = `curl -s "https://hub.docker.com/v2/namespaces/${namespace}/repositories/${repository}/tags?page=${page}" | jq -r '.results[] | select(.images[].digest == "${sha}" and .name != "latest").name'`;
+            const curlCommand = `curl -s "https://hub.docker.com/v2/namespaces/${namespace}/repositories/${repository}/tags?page=${page}" | jq -r '[.results[] | select(.images[].digest == "${sha}" and .name != "latest" and (.name | tostring | test("-amd64$") | not) and (.name | test("-debian") | not)).name] | last'`;
+            //console.log('Executing CURL to dockerhub command:', curlCommand);
               try {
                   const { stdout, stderr } = await exec(curlCommand);
                   if (stderr) {
                       console.error('Error fetching image version:', stderr);
                       continue;
                   }
-                  if (stdout.trim()) {
+                  if (stdout.trim() && stdout.trim() !== 'null') {
+                      console.log(`Image tag found on page ${page}`);
                       containerObj.imageVersionUsedInCluster = stdout.trim();
                       break;
                   }
@@ -168,6 +201,7 @@ async function preProcess(containerObjects, maxPages = 5) {
       }
   }
 }
+
 
 function normalizeVersion(clusterVersion, onlineVersion) {
   const hasVPrefixOnline = onlineVersion.startsWith('v');
