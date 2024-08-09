@@ -138,6 +138,13 @@ async function preProcess(containerObjects) {
 
   for (const containerObj of containerObjects) {
       console.log(containerObj.imageVersionUsedInCluster)
+
+      for (const containerObj of containerObjects) {
+        if (!containerObj.imageVersionUsedInCluster) {
+          console.error(`Image version is undefined for ${containerObj.appName}. Skipping processing.`);
+          continue;
+        }
+      
       if (containerObj.imageVersionUsedInCluster.startsWith('sha256:')) {
           const sha = containerObj.imageVersionUsedInCluster;
           let repository = repositoryMap[containerObj.appName];
@@ -214,14 +221,16 @@ async function getRunningPodImages() {
 
     for (const pod of res.body.items) {
       const appName = pod.metadata.labels?.app || pod.metadata.labels?.['app.kubernetes.io/name'];
+      console.log(`Processing pod: ${pod.metadata.name}, App Name: ${appName}`);
 
       if (!expectedApps.has(appName)) {
+        console.log(`Skipping app not in expectedApps: ${appName}`);
         continue;
       }
 
       missingApps.delete(appName);
-
       if (processedApps.has(appName)) {
+        console.log(`Already processed: ${appName}`);
         continue;
       }
       processedApps.add(appName);
@@ -231,6 +240,7 @@ async function getRunningPodImages() {
       if (software) {
         const containerNameToMatch = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
         const statuses = pod.status.containerStatuses.filter(status => status.name === containerNameToMatch);
+        console.log(`Found ${statuses.length} containers for ${appName} matching ${containerNameToMatch}`);
 
         if (statuses.length === 0) {
           warnings.push(`Warning: Application "${appName}" is defined in ConfigMap but no container with the name "${containerNameToMatch}" was found in the respective pod. Check if the nameexception is correctly set in the ConfigMap.`);
@@ -250,30 +260,12 @@ async function getRunningPodImages() {
     }
 
     await preProcess(containerObjects);
-
     console.log(`Apps found in ConfigMap: ${Array.from(expectedApps).join(', ')}`);
     console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
     if (missingApps.size > 0) {
       console.log(`Apps defined in ConfigMap but not found in cluster: ${Array.from(missingApps).join(', ')}`);
     }
     warnings.forEach(warning => console.warn(warning));
-
-    for (const containerObj of containerObjects) {
-      if (containerObj.command) {
-        const newestImageAvailable = await fetchLatestImageTag(containerObj.command);
-        containerObj.newestImageAvailable = newestImageAvailable;
-        containerObj.imageVersionUsedInCluster = normalizeVersion(containerObj.imageVersionUsedInCluster, newestImageAvailable);
-      }
-      const softwareConfig = configObjects.find(s => s.name === containerObj.appName);
-
-      if (softwareConfig && softwareConfig.eolUrl) {
-        containerObj.eolDate = await fetchEOLDate(containerObj.appName, containerObj.imageVersionUsedInCluster, softwareConfig.eolUrl);
-      } else {
-        containerObj.eolDate = 'EOL information not available';
-      }
-      containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
-    }
-
     console.log({ containerObjects });
     return { containerObjects, missingApps: Array.from(missingApps) };
   } catch (error) {
