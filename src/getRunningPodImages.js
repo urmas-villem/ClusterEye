@@ -234,8 +234,8 @@ async function getRunningPodImages() {
       const software = configObjects.find(s => s.name === appName);
       if (software) {
         const expectedContainerName = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
-        console.log(`Expected container name for ${appName}: ${expectedContainerName}`);
-        console.log(`Available containers in the pod:`, pod.status.containerStatuses.map(s => s.name).join(', '));
+        //console.log(`Expected container name for ${appName}: ${expectedContainerName}`);
+        //console.log(`Available containers in the pod:`, pod.status.containerStatuses.map(s => s.name).join(', '));
 
         const containerFound = pod.status.containerStatuses.some(status => status.name === expectedContainerName);
 
@@ -254,7 +254,7 @@ async function getRunningPodImages() {
           foundApps.push(appName);
           processedApps.add(appName);
         } else {
-          console.log(`No container named ${expectedContainerName} found in pod for ${appName}. Continuing to check other pods.`);
+          //console.log(`No container named ${expectedContainerName} found in pod for ${appName}. Continuing to check other pods.`);
         }
       } else {
         console.log(`No software configuration found for app ${appName}, skipping.`);
