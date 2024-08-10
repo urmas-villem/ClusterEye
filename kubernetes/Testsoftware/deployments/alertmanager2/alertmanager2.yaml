@@ -13,7 +13,8 @@ spec:
   template:
     metadata:
       labels:
-        app: alertmanager2
+        app.kubernetes.io/name: alertmanager2
+        app: testlabel
     spec:
       containers:
       - name: alertmanager
