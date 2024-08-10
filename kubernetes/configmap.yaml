@@ -44,7 +44,7 @@ data:
       "command": ["curl", "-s", "https://api.github.com/repos/argoproj/argo-cd/releases", "|", "jq", "'.[0:20] | map(.tag_name)'", "|", "jq", "-r", "'.[]'", "|", "grep", "-v", "-E", "'beta|rc|alpha'", "|", "sort", "-V", "|", "tail", "-n", "1"],
       "eolUrl": "https://endoflife.date/api/argo-cd.json",
       "note": "Finding the EOL for this needs some bugfixing - there is some formatting issue here. Ill deal with it later.",
-      "nameexception": "server"
+      "nameexception": ""
     }
   node-exporter: |
     {
