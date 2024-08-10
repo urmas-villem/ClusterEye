@@ -289,7 +289,7 @@ async function getRunningPodImages() {
 
     const displayObjects = containerObjects.map(obj => ({
       ...obj,
-      command: Array.isArray(obj.command) ? obj.command.join(" ") : obj.command
+      command: Array.isArray(obj.command) ? `'${obj.command.join(" ")}'` : `'${obj.command}'`
     }));
 
     console.log('Final container objects:', displayObjects);
