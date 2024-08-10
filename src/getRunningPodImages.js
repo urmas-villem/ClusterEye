@@ -245,7 +245,8 @@ async function getRunningPodImages() {
             imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
             imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
             appName: appName,
-            command: Array.isArray(software.command) ? software.command.join(" ") : software.command,
+            command: software.command,
+            commandDisplay: Array.isArray(software.command) ? software.command.join(" ") : software.command,
             note: software.note || ''
           }));
 
