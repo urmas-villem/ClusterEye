@@ -52,7 +52,7 @@ async function fetchLatestImageTag(commandArray) {
       return await fetchRateLimitInfo();
     }
 
-    console.log(`Command executed successfully. Output: ${stdout.trim()}`);
+    console.log(`Command output: ${stdout.trim()}`);
     return stdout.trim();
   } catch (error) {
     console.error(`Error fetching latest tag: ${error.message}`);
@@ -246,7 +246,6 @@ async function getRunningPodImages() {
             imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
             appName: appName,
             command: software.command,
-            commandDisplay: Array.isArray(software.command) ? software.command.join(" ") : software.command,
             note: software.note || ''
           }));
 
@@ -288,7 +287,12 @@ async function getRunningPodImages() {
       containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
     }
 
-    console.log('Final container objects:', containerObjects);
+    const displayObjects = containerObjects.map(obj => ({
+      ...obj,
+      command: Array.isArray(obj.command) ? obj.command.join(" ") : obj.command
+    }));
+
+    console.log('Final container objects:', displayObjects);
     return { containerObjects, missingApps: Array.from(missingApps) };
   } catch (error) {
     console.error('Error during processing:', error);
