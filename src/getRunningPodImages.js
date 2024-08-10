@@ -245,7 +245,7 @@ async function getRunningPodImages() {
             imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
             imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
             appName: appName,
-            command: software.command,
+            command: software.command.join(" "),
             note: software.note || ''
           }));
 
@@ -262,7 +262,11 @@ async function getRunningPodImages() {
     }
 
     console.log('Processing complete. Apps found:', foundApps.join(', '));
-    console.log('Apps that are listed in configmap but not found:', Array.from(missingApps).join(', '));
+    if (missingApps.size === 0) {
+      console.log('All apps listed in configmap were successfully found.');
+    } else {
+      console.log('Apps that are listed in configmap but not found:', Array.from(missingApps).join(', '));
+    }
     warnings.forEach(warning => console.warn(warning));
 
     await preProcess(containerObjects);
