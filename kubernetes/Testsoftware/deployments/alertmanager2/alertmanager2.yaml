@@ -3,8 +3,8 @@ kind: Deployment
 metadata:
   name: alertmanager2
   labels:
-    app.kubernetes.io/name: testlabel
-    app: alertmanager2
+    app.kubernetes.io/name: alertmanager2
+    app: testlabel
 spec:
   replicas: 1
   selector:
