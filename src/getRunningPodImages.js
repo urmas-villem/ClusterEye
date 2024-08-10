@@ -263,7 +263,7 @@ async function getRunningPodImages() {
 
     console.log('Processing complete. Apps found:', foundApps.join(', '));
     containerObjects.forEach(obj => {
-      console.log(`App: ${obj.appName}, Container: ${obj.containerName}, Currently used Version: ${obj.imageVersionUsedInCluster}`);
+      console.log(`App: ${obj.appName}, Currently used Version: ${obj.imageVersionUsedInCluster}`);
     });
     if (missingApps.size === 0) {
       console.log('All apps listed in configmap were successfully found.');
@@ -274,6 +274,7 @@ async function getRunningPodImages() {
 
     await preProcess(containerObjects);
 
+    console.log('Finding the newest image versions for found apps..');
     for (const containerObj of containerObjects) {
       if (containerObj.command) {
         const newestImageAvailable = await fetchLatestImageTag(containerObj.command);
