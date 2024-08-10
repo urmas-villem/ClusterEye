@@ -217,7 +217,8 @@ async function getRunningPodImages(debugMode) {
 
     console.log('Processing pods...');
     for (const pod of res.body.items) {
-      const appName = pod.metadata.labels?.['app.kubernetes.io/name'] || pod.metadata.labels?.app;
+      const appNames = [pod.metadata.labels?.['app.kubernetes.io/name'], pod.metadata.labels?.app].filter(Boolean);
+      const appName = appNames.find(name => expectedApps.has(name));      
       if (!expectedApps.has(appName)) {
         if (debugMode) {
           console.log('Processing pod:', pod.metadata.name, 'with app name:', appName);
