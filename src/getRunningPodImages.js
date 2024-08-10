@@ -287,12 +287,7 @@ async function getRunningPodImages() {
       containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
     }
 
-    const displayObjects = containerObjects.map(obj => ({
-      ...obj,
-      command: Array.isArray(obj.command) ? `'${obj.command.join(" ")}'` : `'${obj.command}'`
-    }));
-
-    console.log('Final container objects:', displayObjects);
+    console.log('Final container objects:', containerObjects);
     return { containerObjects, missingApps: Array.from(missingApps) };
   } catch (error) {
     console.error('Error during processing:', error);
