@@ -25,6 +25,13 @@ data:
       "note": "Alertmanager versions do not have a specific 'end of life'",
       "nameexception": ""
     }
+  alertmanager2: |
+    {
+      "command": ["curl", "-s", "https://api.github.com/repos/prometheus/alertmanager/releases/latest", "|", "jq", "-r", "'.tag_name'"],
+      "eolUrl": "",
+      "note": "Alertmanager versions do not have a specific 'end of life'",
+      "nameexception": "alertmanager"
+    }
   istiod: |
     {
       "command": ["curl", "-s", "https://api.github.com/repos/istio/istio/releases", "|", "jq", "'.[0:20] | map(.tag_name)'", "|", "jq", "-r", "'.[]'", "|", "grep", "-v", "-E", "'beta|rc|alpha'", "|", "sort", "-V", "|", "tail", "-n", "1"],
