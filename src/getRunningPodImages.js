@@ -262,6 +262,9 @@ async function getRunningPodImages() {
     }
 
     console.log('Processing complete. Apps found:', foundApps.join(', '));
+    containerObjects.forEach(obj => {
+      console.log(`App: ${obj.appName}, Container: ${obj.containerName}, Currently used Version: ${obj.imageVersionUsedInCluster}`);
+    });
     if (missingApps.size === 0) {
       console.log('All apps listed in configmap were successfully found.');
     } else {
