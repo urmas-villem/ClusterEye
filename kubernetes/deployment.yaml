@@ -28,6 +28,8 @@ spec:
         - configMapRef:
             name: clustereye-config
         env:
+        - name: DEBUG
+          value: "true"
 #        - name: SLACK_WEBHOOK_URL
 #          valueFrom:
 #            secretKeyRef:

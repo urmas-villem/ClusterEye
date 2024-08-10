@@ -14,6 +14,8 @@ let cache = null;
 let cacheModal = null;
 let lastUpdated = Date.now();
 
+const debugMode = process.env.DEBUG === 'true';
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Prometheus metrics setup

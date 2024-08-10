@@ -218,24 +218,32 @@ async function getRunningPodImages() {
     console.log('Processing pods...');
     for (const pod of res.body.items) {
       const appName = pod.metadata.labels?.['app.kubernetes.io/name'] || pod.metadata.labels?.app;
-      //console.log('Processing pod:', pod.metadata.name, 'with app name:', appName);
+      if (!expectedApps.has(appName)) {
+        console.log('Processing pod:', pod.metadata.name, 'with app name:', appName);
+      }
 
       if (!expectedApps.has(appName)) {
-        //console.log(`Skipping pod ${pod.metadata.name} as ${appName} is not an expected app.`);
+        if (debugMode) {
+          console.log(`Skipping pod ${pod.metadata.name} as ${appName} is not an expected app.`);
+        }
         continue;
       }
 
       missingApps.delete(appName);
       if (processedApps.has(appName)) {
-        //console.log(`Skipping pod ${pod.metadata.name} for ${appName} as it has already been processed successfully.`);
+        if (debugMode) {
+          console.log(`Skipping pod ${pod.metadata.name} for ${appName} as it has already been processed successfully.`);
+        }
         continue;
       }
 
       const software = configObjects.find(s => s.name === appName);
       if (software) {
         const expectedContainerName = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
-        //console.log(`Expected container name for ${appName}: ${expectedContainerName}`);
-        //console.log(`Available containers in the pod:`, pod.status.containerStatuses.map(s => s.name).join(', '));
+        if (debugMode) {
+          console.log(`Expected container name for ${appName}: ${expectedContainerName}`);
+          console.log(`Available containers in the pod:`, pod.status.containerStatuses.map(s => s.name).join(', '));
+        }
 
         const containerFound = pod.status.containerStatuses.some(status => status.name === expectedContainerName);
 
@@ -248,13 +256,17 @@ async function getRunningPodImages() {
             command: software.command,
             note: software.note || ''
           }));
-
-          //console.log(`Found app: ${appName} processed`);
+          
+          if (debugMode) {
+            console.log(`Found app: ${appName} processed`);
+          }
           containerObjects.push(...statusObjects);
           foundApps.push(appName);
           processedApps.add(appName);
         } else {
-          //console.log(`No container named ${expectedContainerName} found in pod for ${appName}. Continuing to check other pods.`);
+          if (debugMode) {
+            console.log(`No container named ${expectedContainerName} found in pod for ${appName}. Continuing to check other pods.`);
+          }
         }
       } else {
         console.log(`No software configuration found for app ${appName}, skipping.`);
