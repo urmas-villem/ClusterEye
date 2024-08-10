@@ -204,22 +204,30 @@ function normalizeVersion(clusterVersion, onlineVersion) {
 async function getRunningPodImages() {
   try {
     const { configObjects, expectedApps } = await fetchSoftwareConfig();
+    console.log('Fetched software config successfully.');
+
     const res = await coreV1Api.listPodForAllNamespaces();
+    console.log('Fetched list of all pods across all namespaces.');
+
     const processedApps = new Set();
     const containerObjects = [];
     const missingApps = new Set(expectedApps);
     let foundApps = [];
     let warnings = [];
 
+    console.log('Starting to process each pod.');
     for (const pod of res.body.items) {
-      const appName = pod.metadata.labels?.app || pod.metadata.labels?.['app.kubernetes.io/name'];
+      const appName = pod.metadata.labels?.['app.kubernetes.io/name'];
+      console.log('Processing pod:', pod.metadata.name, 'with app name:', appName);
 
       if (!expectedApps.has(appName)) {
+        console.log(`Skipping pod ${pod.metadata.name} as ${appName} is not an expected app.`);
         continue;
       }
 
       missingApps.delete(appName);
       if (processedApps.has(appName)) {
+        console.log(`Already processed ${appName}, skipping...`);
         continue;
       }
 
@@ -228,16 +236,15 @@ async function getRunningPodImages() {
       const software = configObjects.find(s => s.name === appName);
 
       if (software) {
-        // Adjusted the check for nameexception here
         const expectedContainerName = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
         const containerFound = pod.status.containerStatuses.some(status => status.name === expectedContainerName);
 
         if (!containerFound) {
-          warnings.push(`Warning: Application "${appName}" is defined in ConfigMap but no container with the name "${expectedContainerName}" was found in the respective pod. This can be intentional if the nameexception is set correctly in the configmap.`);
+          warnings.push(`Warning: Application "${appName}" is defined in ConfigMap but no container with the name "${expectedContainerName}" was found in the respective pod.`);
+          console.log(`No container named ${expectedContainerName} found in pod for ${appName}. This may be intentional if the nameexception is set correctly.`);
         } else {
           const statusObjects = pod.status.containerStatuses.filter(status => status.name === expectedContainerName).map(status => ({
-            // Use appName for the containerName to ensure it matches the application name from the configmap
-            containerName: appName,
+            containerName: appName, // Use appName to ensure it matches the application name from the configmap
             imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
             imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
             appName: appName,
@@ -245,18 +252,16 @@ async function getRunningPodImages() {
             note: software.note || ''
           }));
 
+          console.log(`Processed container statuses for app ${appName}.`);
           containerObjects.push(...statusObjects);
         }
+      } else {
+        console.log(`No software configuration found for app ${appName}, skipping.`);
       }
     }
 
-    console.log(`Apps found in ConfigMap: ${Array.from(expectedApps).join(', ')}`);
-    if (missingApps.size === 0) {
-      console.log("All apps defined in Configmap were found in the cluster.");
-    } else {
-      console.log(`Apps defined in ConfigMap & found in cluster: ${foundApps.join(', ')}`);
-      console.log(`Apps defined in ConfigMap but not found in cluster: ${Array.from(missingApps).join(', ')}`);
-    }
+    console.log('Processing complete. Apps found:', foundApps.join(', '));
+    console.log('Apps not found:', Array.from(missingApps).join(', '));
     warnings.forEach(warning => console.warn(warning));
 
     await preProcess(containerObjects);
@@ -277,10 +282,10 @@ async function getRunningPodImages() {
       containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
     }
 
-    console.log({ containerObjects });
+    console.log('Final container objects:', containerObjects);
     return { containerObjects, missingApps: Array.from(missingApps) };
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error during processing:', error);
     return { containerObjects: [], missingApps: [] };
   }
 }
