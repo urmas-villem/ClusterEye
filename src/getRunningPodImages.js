@@ -227,14 +227,11 @@ async function getRunningPodImages() {
 
       missingApps.delete(appName);
       if (processedApps.has(appName)) {
-        console.log(`Already processed ${appName}, skipping...`);
+        console.log(`Skipping pod ${pod.metadata.name} for ${appName} as it has already been processed successfully.`);
         continue;
       }
 
-      processedApps.add(appName);
-      foundApps.push(appName);
       const software = configObjects.find(s => s.name === appName);
-
       if (software) {
         const expectedContainerName = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
         console.log(`Expected container name for ${appName}: ${expectedContainerName}`);
@@ -242,10 +239,7 @@ async function getRunningPodImages() {
 
         const containerFound = pod.status.containerStatuses.some(status => status.name === expectedContainerName);
 
-        if (!containerFound) {
-          warnings.push(`Warning: Application "${appName}" is defined in ConfigMap but no container with the name "${expectedContainerName}" was found in the respective pod.`);
-          console.log(`No container named ${expectedContainerName} found in pod for ${appName}. This may be intentional if the nameexception is set correctly.`);
-        } else {
+        if (containerFound) {
           const statusObjects = pod.status.containerStatuses.filter(status => status.name === expectedContainerName).map(status => ({
             containerName: appName,
             imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
@@ -257,6 +251,10 @@ async function getRunningPodImages() {
 
           console.log(`Processed container statuses for app ${appName}.`);
           containerObjects.push(...statusObjects);
+          foundApps.push(appName);
+          processedApps.add(appName);
+        } else {
+          console.log(`No container named ${expectedContainerName} found in pod for ${appName}. Continuing to check other pods.`);
         }
       } else {
         console.log(`No software configuration found for app ${appName}, skipping.`);
