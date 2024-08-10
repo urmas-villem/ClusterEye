@@ -201,7 +201,7 @@ function normalizeVersion(clusterVersion, onlineVersion) {
   return clusterVersion;
 }
 
-async function getRunningPodImages() {
+async function getRunningPodImages(debugMode) {
   try {
     const { configObjects, expectedApps } = await fetchSoftwareConfig();
     console.log('Fetched software config successfully.');

@@ -30,7 +30,7 @@ const containerInfoGauge = new promClient.Gauge({
 // Function to update the cache
 async function updateCache() {
     try {
-        const result = await getRunningPodImages();
+        const result = await getRunningPodImages(debugMode);
         cache = result.containerObjects;
         cacheModal = result.missingApps;
         lastUpdated = Date.now();
