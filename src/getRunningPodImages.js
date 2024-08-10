@@ -237,6 +237,9 @@ async function getRunningPodImages() {
 
       if (software) {
         const expectedContainerName = software.nameexception && software.nameexception.trim() !== "" ? software.nameexception : appName;
+        console.log(`Expected container name for ${appName}: ${expectedContainerName}`);
+        console.log(`Available containers in the pod:`, pod.status.containerStatuses.map(s => s.name).join(', '));
+
         const containerFound = pod.status.containerStatuses.some(status => status.name === expectedContainerName);
 
         if (!containerFound) {
@@ -244,7 +247,7 @@ async function getRunningPodImages() {
           console.log(`No container named ${expectedContainerName} found in pod for ${appName}. This may be intentional if the nameexception is set correctly.`);
         } else {
           const statusObjects = pod.status.containerStatuses.filter(status => status.name === expectedContainerName).map(status => ({
-            containerName: appName, // Use appName to ensure it matches the application name from the configmap
+            containerName: appName,
             imageRepository: status.image.includes('sha256') ? status.imageID.split('@')[0] : status.image.split(':')[0],
             imageVersionUsedInCluster: status.image.includes('sha256') ? status.imageID.split('@')[1] : status.image.split(':')[1],
             appName: appName,
