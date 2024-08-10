@@ -287,7 +287,7 @@ async function getRunningPodImages() {
       containerObj.daysUntilEOL = eolDays(containerObj.eolDate);
     }
 
-    console.log('Final container objects:', containerObjects);
+    //console.log('Final container objects:', containerObjects);
     return { containerObjects, missingApps: Array.from(missingApps) };
   } catch (error) {
     console.error('Error during processing:', error);
