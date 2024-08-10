@@ -7,10 +7,6 @@ metadata:
     app: testlabel
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: alertmanager2
-      app: testlabel
   template:
     metadata:
       labels:
