@@ -292,6 +292,7 @@ async function getRunningPodImages() {
     }
 
     //console.log('Final container objects:', containerObjects);
+    console.log('Done');
     return { containerObjects, missingApps: Array.from(missingApps) };
   } catch (error) {
     console.error('Error during processing:', error);
