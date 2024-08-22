@@ -13,6 +13,6 @@ RUN apk add --no-cache curl jq
 
 RUN npm install @cyclonedx/bom
 RUN npx @cyclonedx/bom -o sbom.xml || echo "Failed to generate SBOM"
-RUN npm uninstall @cyclonedx/bom
+#RUN npm uninstall @cyclonedx/bom
 
 CMD ["node", "server.js"]
