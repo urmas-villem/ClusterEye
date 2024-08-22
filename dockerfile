@@ -11,7 +11,7 @@ WORKDIR /app
 COPY --from=builder /work/ .
 RUN apk add --no-cache curl jq
 
-RUN npm install @cyclonedx/bom
+RUN npm install -g @cyclonedx/bom
 RUN npx @cyclonedx/bom -o sbom.xml || echo "Failed to generate SBOM"
 #RUN npm uninstall @cyclonedx/bom
 
