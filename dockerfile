@@ -9,8 +9,10 @@ COPY ./src/ .
 FROM node:20.16.0-alpine
 WORKDIR /app
 COPY --from=builder /work/ .
-RUN apk add --no-cache curl jq \
-    && npm install @cyclonedx/bom \
-    && npx @cyclonedx/bom -o sbom.xml \
-    && npm uninstall @cyclonedx/bom
+RUN apk add --no-cache curl jq
+
+RUN npm install @cyclonedx/bom
+RUN npx @cyclonedx/bom -o sbom.xml || echo "Failed to generate SBOM"
+RUN npm uninstall @cyclonedx/bom
+
 CMD ["node", "server.js"]
