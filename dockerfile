@@ -11,6 +11,6 @@ WORKDIR /app
 COPY --from=builder /work/ .
 RUN apk add --no-cache curl jq
 
-RUN npx @cyclonedx/bom -o sbom.xml || echo "Failed to generate SBOM"
+RUN npx cyclonedx-npm --output-format XML --output-file sbom.xml
 
 CMD ["node", "server.js"]
