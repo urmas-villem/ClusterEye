@@ -9,5 +9,8 @@ COPY ./src/ .
 FROM node:20.16.0-alpine
 WORKDIR /app
 COPY --from=builder /work/ .
-RUN apk add --no-cache curl jq
+RUN apk add --no-cache curl jq \
+    && npm install @cyclonedx/bom \
+    && npx @cyclonedx/bom -o sbom.xml \
+    && npm uninstall @cyclonedx/bom
 CMD ["node", "server.js"]
